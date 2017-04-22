@@ -4,7 +4,7 @@ branches:
   only:
     - master
 
-sudo: false
+sudo: required
 
 addons:
   apt:
@@ -44,7 +44,7 @@ matrix:
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.8.0.44-1 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
     # clang 3.9
@@ -64,7 +64,7 @@ matrix:
 
     # Shared libs
     - os: osx
-      env: BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+      env: BUILD_TYPE=Release SHARED=ON
       osx_image: xcode8
 
     - os: linux
@@ -73,7 +73,7 @@ matrix:
 
     # Debug
     - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
+      env: BUILD_TYPE=Debug SHARED=OFF
       osx_image: xcode8
 
     - os: linux
