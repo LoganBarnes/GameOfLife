@@ -34,50 +34,50 @@ matrix:
 
     # GCC 5
     - os: linux
-      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
+      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: gcc
 
     # GCC 6
     - os: linux
-      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
+      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: gcc
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
+      env: LLVM_VERSION=3.8.0.44-1 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
+      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
     # shared libs
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
       compiler: clang
 
     # shared libs
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
       compiler: clang
 
     # Shared libs
     - os: osx
-      env: BUILD_TYPE=Release SHARED=ON CUDA=8.0
+      env: BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
       osx_image: xcode8
 
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
       compiler: clang
 
     # Debug
     - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF CUDA=8.0
+      env: BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
       osx_image: xcode8
 
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0
+      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
 install:
@@ -140,7 +140,11 @@ install:
   # Install a CUDA
   ############################################################################
   - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh; fi
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh
+    else
+      brew upgrade Caskroom/cask/cuda || brew install Caskroom/cask/cuda
+    fi
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
