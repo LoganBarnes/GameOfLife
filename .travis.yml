@@ -43,14 +43,14 @@ matrix:
       env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: gcc
 
-    # # clang 3.8
-    # - os: linux
-    #   env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-    #   compiler: clang
+    # clang 3.8
+    - os: linux
+      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+      compiler: clang
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF
       compiler: clang
 
     # # shared libs
@@ -82,6 +82,10 @@ matrix:
     #   compiler: clang
 
 install:
+  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    brew update
+  fi
+
   ############################################################################
   # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
   ############################################################################
@@ -142,11 +146,13 @@ install:
   ############################################################################
   - |
     if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh
+      if [[ "${CUDA}" != "" ]]; then
+        source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh
+      fi
     else
-      brew cask upgrade cuda || travis_retry brew cask install cuda
+      brew upgrade Caskroom/cask/cuda || travis_retry brew cask install cuda
     fi
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then nvcc --version; fi;
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" && "${CUDA}" != "" ]]; then nvcc --version; fi;
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
