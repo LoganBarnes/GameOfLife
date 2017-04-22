@@ -154,7 +154,7 @@ GameOfLifeApp::exec(
 
 
   std::default_random_engine gen( seed );
-  std::uniform_int_distribution< bool > dist;
+  std::bernoulli_distribution dist;
 
   std::vector< bool > state( w * h );
 
