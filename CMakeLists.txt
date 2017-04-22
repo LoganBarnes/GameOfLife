@@ -1,6 +1,8 @@
 cmake_minimum_required ( VERSION 3.7.2 )
 project ( GameOfLife )
 
+option( STRICT_FLAGS "Compile with strict error and warning flags" OFF )
+
 # project dirs
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
@@ -58,7 +60,9 @@ if ( ${CUDA_FOUND} )
   include_directories( SYSTEM ${SRC_DIR}/gpu/cuda_helpers )
   include_directories(        ${SRC_DIR}                  )
 
-  # set nvcc options
+  ###
+  ### set nvcc options
+  ###
   if( UNIX OR APPLE )
     list( APPEND PROJECT_NVCC_FLAGS -Xcompiler -fPIC )
   endif( )
@@ -67,13 +71,20 @@ if ( ${CUDA_FOUND} )
     list( APPEND PROJECT_NVCC_FLAGS -Xcompiler -fno-strict-aliasing )
   endif( )
 
-  # Auto detect compute architecture
-  cuda_select_nvcc_arch_flags( CUDA_ARCH_FLAGS Auto )
+  ###
+  ### Auto detect compute architecture
+  ###
+  if ( NOT ${CMAKE_VERSION} VERSION_LESS 3.7.1 AND NOT CUDA_ARCH_FLAGS )
+    cuda_select_nvcc_arch_flags( CUDA_ARCH_FLAGS Auto )
+    set( CUDA_ARCH_FLAGS ${CUDA_ARCH_FLAGS} CACHE STRING "gencode architecture flags for nvcc" )
+  endif( )
 
   list( APPEND PROJECT_NVCC_FLAGS ${CUDA_ARCH_FLAGS} )
 
 
-  # build CUDA library
+  ###
+  ### build CUDA library
+  ###
   cuda_add_library(
                    golCuda
 
