@@ -34,50 +34,50 @@ matrix:
 
     # GCC 5
     - os: linux
-      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF
+      env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
       compiler: gcc
 
     # GCC 6
     - os: linux
-      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF
+      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
       compiler: gcc
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF
+      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
       compiler: clang
 
     # clang 3.9
     - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF
+      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0
       compiler: clang
 
     # shared libs
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
       compiler: clang
 
     # shared libs
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
       compiler: clang
 
     # Shared libs
     - os: osx
-      env: BUILD_TYPE=Release SHARED=ON
+      env: BUILD_TYPE=Release SHARED=ON CUDA=8.0
       osx_image: xcode8
 
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON
+      env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0
       compiler: clang
 
     # Debug
     - os: osx
-      env: BUILD_TYPE=Debug SHARED=OFF
+      env: BUILD_TYPE=Debug SHARED=OFF CUDA=8.0
       osx_image: xcode8
 
     - os: linux
-      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF
+      env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0
       compiler: clang
 
 install:

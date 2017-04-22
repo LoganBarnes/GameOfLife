@@ -1,4 +1,7 @@
 // Main.cpp
+#include "GameOfLifeApp.hpp"
+#include "cpu/GameOfLifeCpu.hpp"
+
 #include <iostream>
 #include <cstdlib>
 #include <random>
@@ -6,8 +9,6 @@
 #include <chrono>
 #include <ncurses.h>
 
-#include "GameOfLifeApp.hpp"
-#include "GameOfLife.hpp"
 
 
 namespace
@@ -168,7 +169,7 @@ GameOfLifeApp::exec(
                 genLambda
                 );
 
-  GameOfLife game( state, w );
+  GameOfLifeCpu game( state, w, h );
   renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
 
 
