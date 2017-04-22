@@ -140,7 +140,7 @@ install:
   # Install a CUDA
   ############################################################################
   - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source .travis/install-cuda-trusty.sh; fi
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh; fi
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
