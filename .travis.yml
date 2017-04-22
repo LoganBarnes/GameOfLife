@@ -82,9 +82,10 @@ matrix:
     #   compiler: clang
 
 install:
-  if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-    brew update
-  fi
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew update
+    fi
 
   ############################################################################
   # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
