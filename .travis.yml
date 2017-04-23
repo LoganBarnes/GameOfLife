@@ -129,7 +129,7 @@ matrix:
 
     # clang 3.9 (cuda not supported)
     - os: linux
-      env: BUILD_TYPE=Release SHARED=OFF COMPILER=clang-3.9
+      env: BUILD_TYPE=Release SHARED=OFF C_COMPILER=clang-3.9 CXX_COMPILER=clang++-3.9
       compiler: "clang-3.9"
 
     # # shared libs
@@ -176,7 +176,8 @@ install:
   # # Setup default versions and override compiler if needed
   # ############################################################################
   - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8; fi
-  - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
+  - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
+  - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
 
 
   ############################################################################
@@ -196,6 +197,8 @@ install:
   # ############################################################################
   # # Install Clang, libc++ and libc++abi
   # ############################################################################
+  - export CXXFLAGS="-nostdinc++"
+  - export LDFLAGS="-l c++ -l c++abi"
   # - source ${TRAVIS_BUILD_DIR}/.travis/install-llvm-trusty.sh
   # - |
   #   if [[ "${LLVM_VERSION}" != "" ]]; then
