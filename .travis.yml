@@ -22,13 +22,13 @@ addons_shortcuts:
       packages: [ 'clang-4.0', 'libc++-dev' ]
   addons_gcc49: &gcc49
     apt:
-      packages: [ 'g++-4.9', 'gcc-4.9' ]
+      packages: [ 'gcc-4.9' ]
   addons_gcc5: &gcc5
     apt:
-      packages: [ 'g++-5', 'gcc-5' ]
+      packages: [ 'gcc-5' ]
   addons_gcc6: &gcc6
     apt:
-      packages: [ 'g++-6', 'gcc-6', 'doxygen' ]
+      packages: [ 'gcc-6', 'doxygen' ]
 
 
 addons:
