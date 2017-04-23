@@ -7,6 +7,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
+#include <stdexcept>
 #include <ncurses.h>
 
 
