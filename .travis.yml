@@ -129,7 +129,7 @@ matrix:
 
     # clang 3.9 (cuda not supported)
     - os: linux
-      env: BUILD_TYPE=Release SHARED=OFF
+      env: BUILD_TYPE=Release SHARED=OFF CXX=clang-3.9
       compiler: "clang-3.9"
 
     # # shared libs
