@@ -11,15 +11,15 @@ addons_shortcuts:
   addons_clang38: &clang38
     apt:
       sources: [ 'llvm-toolchain-trusty-3.8' ]
-      packages: [ 'clang-3.8' ]
+      packages: [ 'clang-3.8', 'libc++-dev' ]
   addons_clang39: &clang39
     apt:
       sources: [ 'llvm-toolchain-trusty-3.9' ]
-      packages: [ 'clang-3.9' ]
+      packages: [ 'clang-3.9', 'libc++-dev' ]
   addons_clang35: &clang40
     apt:
       sources: [ 'llvm-toolchain-trusty-4.0' ]
-      packages: [ 'clang-4.0' ]
+      packages: [ 'clang-4.0', 'libc++-dev' ]
   addons_gcc49: &gcc49
     apt:
       packages: [ 'g++-4.9', 'gcc-4.9' ]
@@ -35,12 +35,6 @@ addons:
   apt:
     sources: &sources
       - ubuntu-toolchain-r-test
-
-# cache:
-#   directories:
-#     # - $HOME/llvm
-#     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8
-#     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9
 
 matrix:
   include:
@@ -170,8 +164,12 @@ install:
   # ############################################################################
   # # Setup default versions and override compiler if needed
   # ############################################################################
-  - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
-  - if [[ "${LLVM}" != "" ]]; then export CC=clang-${LLVM}; export CXX=clang++-${LLVM}; fi
+  # - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
+
+  # - if [[ "${LLVM}" != "" ]]; then export CC=clang-${LLVM}; export CXX=clang++-${LLVM}; fi
+  - update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM} 100
+  - update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM} 100
+  - clang --version
 
 
   ############################################################################
@@ -186,44 +184,6 @@ install:
       brew upgrade cmake || brew install cmake
     fi
   - cmake --version
-
-
-  # ############################################################################
-  # # Install Clang, libc++ and libc++abi
-  # ############################################################################
-  # - export CXXFLAGS="-nostdinc++"
-  # - export LDFLAGS="-l c++ -l c++abi"
-  # - source ${TRAVIS_BUILD_DIR}/.travis/install-llvm-trusty.sh
-  # - |
-  #   if [[ "${LLVM_VERSION}" != "" ]]; then
-  #     LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-  #     if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-  #       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-  #       LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-  #       LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-  #       CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-  #       mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-  #       travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-  #       travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-  #       travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-  #       travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-  #       (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-  #       (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-  #       (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-  #     fi
-  #     export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-  #     export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-  #     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-  #     export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-  #   fi
-  # - |
-    # if [[ "${LLVM_VERSION}" != "" ]]; then
-  # - wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-  # - sudo apt-add-repository 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
-  # - sudo apt-get update
-  # - sudo apt-get install clang-${LLVM_VERSION}
-  #   # fi
-  - ${CXX} --version
 
 
   ############################################################################
