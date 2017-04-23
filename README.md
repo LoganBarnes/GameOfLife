@@ -1,7 +1,7 @@
 Game of Life
 ============
 
-*Requires NCurses (Unix only)
+[![Build Status](https://travis-ci.org/LoganBarnes/GameOfLife.svg?branch=master)](https://travis-ci.org/LoganBarnes/GameOfLife)
 
 Download
 --------
