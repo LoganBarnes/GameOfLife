@@ -97,16 +97,11 @@ before_install:
   - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
   - |
     if [[ "${LLVM}" != "" ]]; then
-      # export CXX=clang++-${LLVM}
-      sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM} 1
-      sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM} 1
-      sudo update-alternatives --display clang++
+      export CXX=clang++-${LLVM}
     fi
   - |
     if [[ "${GCC}" != "" ]]; then
-      # export CXX=g++-${GCC}
-      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC} 1
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${GCC} 1
+      export CXX=g++-${GCC}
     fi
   - ${CXX} --version
 
