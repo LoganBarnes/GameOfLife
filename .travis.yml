@@ -22,13 +22,13 @@ addons_shortcuts:
       packages: [ 'clang-4.0', 'libc++-dev' ]
   addons_gcc49: &gcc49
     apt:
-      packages: [ 'gcc-4.9' ]
+      packages: [ 'g++-4.9' ]
   addons_gcc5: &gcc5
     apt:
-      packages: [ 'gcc-5' ]
+      packages: [ 'g++-5' ]
   addons_gcc6: &gcc6
     apt:
-      packages: [ 'gcc-6', 'doxygen' ]
+      packages: [ 'g++-6', 'doxygen' ]
 
 
 addons:
@@ -36,43 +36,44 @@ addons:
     sources: &sources
       - ubuntu-toolchain-r-test
 
+env:
+  CUDA=7.5-18
+  CUDA=8.0.44-1
+
 matrix:
   include:
-    - os: osx
-      osx_image: xcode6
-      env: CUDA=8.0.44-1
-      compiler: clang
-    - os: osx
-      env: CUDA=8.0.44-1
-      osx_image: xcode7
-      compiler: clang
-    - os: osx
-      env: CUDA=8.0.44-1
-      osx_image: xcode8
-      compiler: clang
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
-      addons: *clang38
+    # - os: osx
+    #   osx_image: xcode6
+    #   compiler: clang
+    # - os: osx
+    #   osx_image: xcode7
+    #   compiler: clang
+    # - os: osx
+    #   osx_image: xcode8
+    #   compiler: clang
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++
+    #   addons: *clang38
     - os: linux
       compiler: "clang-3.9"
-      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++ CUDA=""
       addons: *clang39
     - os: linux
       compiler: "clang-4.0"
-      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
+      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++ CUDA=""
       addons: *clang40
     - os: linux
-      compiler: "gcc-4.9"
-      env: GCC=4.9 CUDA=8.0.44-1
+      compiler: "g++-4.9"
+      env: GCC=4.9
       addons: *gcc49
     - os: linux
-      compiler: "gcc-5"
-      env: GCC=5 CUDA=8.0.44-1
+      compiler: "g++-5"
+      env: GCC=5
       addons: *gcc5
     - os: linux
-      compiler: "gcc-6"
-      env: GCC=6 CUDA=8.0.44-1
+      compiler: "g++-6"
+      env: GCC=6
       addons: *gcc6
 
 before_install:
@@ -87,16 +88,14 @@ before_install:
   - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
   - |
     if [[ "${LLVM}" != "" ]]; then
-      export CC=clang-${LLVM}
       export CXX=clang++-${LLVM}
       clang --version
     fi
   - |
     if [[ "${GCC}" != "" ]]; then
-      export CC=gcc-${GCC}
       export CXX=g++-${GCC}
-      gcc --version
     fi
+  - ${CXX} --version
 
 install:
   ############################################################################
