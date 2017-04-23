@@ -39,7 +39,7 @@ addons:
       - libc++abi-dev
       - libc++-dev
       - llvm-3.9-dev
-      - clang-3.9-dev
+      - clang-3.9
     sources: &sources
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-3.9
