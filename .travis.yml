@@ -124,6 +124,7 @@ install:
   ############################################################################
   # Install Clang, libc++ and libc++abi
   ############################################################################
+  - source .travis/install-llvm-trusty.sh
   # - |
   #   if [[ "${LLVM_VERSION}" != "" ]]; then
   #     LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
