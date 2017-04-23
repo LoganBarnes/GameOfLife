@@ -36,8 +36,7 @@ dist: trusty
 addons:
   apt:
     packages:
-      - g++-5
-      - g++-6
+      - clang-3.9
     sources: &sources
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-3.9
@@ -123,15 +122,15 @@ matrix:
     #   env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
     #   compiler: gcc
 
-    # clang 3.8
-    - os: linux
-      env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-      compiler: "clang-3.8"
-
-    # # clang 3.9 (cuda not supported)
+    # # clang 3.8
     # - os: linux
-    #   env: LLVM_VERSION=3.9 BUILD_TYPE=Release SHARED=OFF
-    #   compiler: clang
+    #   env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+    #   compiler: "clang-3.8"
+
+    # clang 3.9 (cuda not supported)
+    - os: linux
+      env: BUILD_TYPE=Release SHARED=OFF
+      compiler: "clang-3.9"
 
     # # shared libs
     # - os: linux
