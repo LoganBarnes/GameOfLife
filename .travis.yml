@@ -17,9 +17,9 @@ addons:
 
 cache:
   directories:
-    - $HOME/llvm
+    # - $HOME/llvm
     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
-    # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
 
 matrix:
   include:
@@ -46,22 +46,22 @@ matrix:
 
     # clang 3.8
     - os: linux
-      env: LLVM=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
     # clang 3.9 (cuda not supported)
     - os: linux
-      env: LLVM=3.9.0 BUILD_TYPE=Release SHARED=OFF
+      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF
       compiler: clang
 
     # # shared libs
     # - os: linux
-    #   env: LLVM=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
     #   compiler: clang
 
     # # shared libs
     # - os: linux
-    #   env: LLVM=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
     #   compiler: clang
 
     # # Shared libs
@@ -70,7 +70,7 @@ matrix:
     #   osx_image: xcode8
 
     # - os: linux
-    #   env: LLVM=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
     #   compiler: clang
 
     # # Debug
@@ -79,7 +79,7 @@ matrix:
     #   osx_image: xcode8
 
     # - os: linux
-    #   env: LLVM=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
+    #   env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
     #   compiler: clang
 
 install:
