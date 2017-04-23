@@ -38,116 +38,42 @@ addons:
 
 matrix:
   include:
-    # - os: osx
-    #   osx_image: xcode6
-    #   compiler: clang
-    # - os: osx
-    #   osx_image: xcode7
-    #   compiler: clang
-    # - os: osx
-    #   osx_image: xcode8
-    #   compiler: clang
+    - os: osx
+      osx_image: xcode6
+      env: CUDA=8.0.44-1
+      compiler: clang
+    - os: osx
+      env: CUDA=8.0.44-1
+      osx_image: xcode7
+      compiler: clang
+    - os: osx
+      env: CUDA=8.0.44-1
+      osx_image: xcode8
+      compiler: clang
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=3.8 CUDA=8.0.44-1
+      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
       addons: *clang38
-    # - os: linux
-    #   compiler: "clang-3.9"
-    #   env: LLVM=3.9 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
-    #   addons: *clang39
-    # - os: linux
-    #   compiler: "clang-4.0"
-    #   env: LLVM=4.0 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
-    #   addons: *clang40
-    # - os: linux
-    #   compiler: "gcc-4.7"
-    #   env: CXX=g++-4.7
-    #   addons: *gcc47
-    # - os: linux
-    #   compiler: "gcc-4.8"
-    #   env: CXX=g++-4.8
-    #   addons: *gcc48
-    # - os: linux
-    #   compiler: "gcc-4.9"
-    #   env: CXX=g++-4.9 COVERAGE=gcov-4.9
-    #   addons: *gcc49
-    # - os: linux
-    #   compiler: "gcc-4.9"
-    #   env: CXX=g++-4.9 CXX_STD=c++14
-    #   addons: *gcc49
-    # - os: linux
-    #   compiler: "gcc-5"
-    #   env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"
-    #   addons: *gcc5
-    # - os: linux
-    #   compiler: "gcc-5"
-    #   env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1"
-    #   addons: *gcc5
-    # - os: linux
-    #   compiler: "gcc-6"
-    #   env: CXX=g++-6 BUILD_DOC=1
-    #   addons: *gcc6
-
-# matrix:
-#   include:
-
-#     # Xcode 7.3
-#     - os: osx
-#       env: BUILD_TYPE=Release SHARED=OFF
-#       osx_image: xcode7.3
-
-#     # Xcode 8
-#     - os: osx
-#       env: BUILD_TYPE=Release SHARED=OFF
-#       osx_image: xcode8
-
-#     # GCC 5
-#     - os: linux
-#       env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-#       compiler: gcc
-
-#     # GCC 6
-#     - os: linux
-#       env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-#       compiler: gcc
-
-#     # clang 3.8
-#     - os: linux
-#       env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-#       compiler: "clang-3.8"
-
-#     # clang 3.9 (cuda not supported)
-#     - os: linux
-#       env: BUILD_TYPE=Release SHARED=OFF C_COMPILER=clang-3.9 CXX_COMPILER=clang++-3.9 CXXFLAGS=-stdlib=libc++
-#       compiler: "clang-3.9"
-
-#     # shared libs
-#     - os: linux
-#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-#       compiler: clang
-
-#     # shared libs
-#     - os: linux
-#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-#       compiler: clang
-
-#     # Shared libs
-#     - os: osx
-#       env: BUILD_TYPE=Release SHARED=ON
-#       osx_image: xcode8
-
-#     - os: linux
-#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-#       compiler: clang
-
-#     # Debug
-#     - os: osx
-#       env: BUILD_TYPE=Debug SHARED=OFF
-#       osx_image: xcode8
-
-#     - os: linux
-#       env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
-#       compiler: clang
+    - os: linux
+      compiler: "clang-3.9"
+      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+      addons: *clang39
+    - os: linux
+      compiler: "clang-4.0"
+      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
+      addons: *clang40
+    - os: linux
+      compiler: "gcc-4.9"
+      env: GCC=4.9 CUDA=8.0.44-1
+      addons: *gcc49
+    - os: linux
+      compiler: "gcc-5"
+      env: GCC=5 CUDA=8.0.44-1
+      addons: *gcc5
+    - os: linux
+      compiler: "gcc-6"
+      env: GCC=6 CUDA=8.0.44-1
+      addons: *gcc6
 
 before_install:
   - |
@@ -164,6 +90,12 @@ before_install:
       export CC=clang-${LLVM}
       export CXX=clang++-${LLVM}
       clang --version
+    fi
+  - |
+    if [[ "${GCC}" != "" ]]; then
+      export CC=gcc-${GCC}
+      export CXX=g++-${GCC}
+      gcc --version
     fi
 
 install:
