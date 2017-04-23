@@ -150,30 +150,28 @@ matrix:
 #       compiler: clang
 
 before_install:
-  - sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM} 100
-  - sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM} 100
-  - clang --version
-
-install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       brew update
     fi
 
   ############################################################################
+  # Setup default versions and override compiler if needed
+  ############################################################################
+  - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
+  - |
+    if [[ "${LLVM}" != "" ]]; then
+      export CC=clang-${LLVM}
+      export CXX=clang++-${LLVM}
+      clang --version
+    fi
+
+install:
+  ############################################################################
   # All the dependencies are installed in ${TRAVIS_BUILD_DIR}/deps/
   ############################################################################
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
-
-  # ############################################################################
-  # # Setup default versions and override compiler if needed
-  # ############################################################################
-  # - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
-
-  # - if [[ "${LLVM}" != "" ]]; then export CC=clang-${LLVM}; export CXX=clang++-${LLVM}; fi
-
-
 
   ############################################################################
   # Install a recent CMake
@@ -187,7 +185,6 @@ install:
       brew upgrade cmake || brew install cmake
     fi
   - cmake --version
-
 
   ############################################################################
   # Install a CUDA
