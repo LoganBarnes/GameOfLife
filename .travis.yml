@@ -4,8 +4,34 @@ branches:
   only:
     - master
 
-sudo: required
-# dist: trusty
+dist: trusty
+
+# # Save common build configurations as shortcuts, so we can reference them later.
+# addons_shortcuts:
+#   addons_clang35: &clang35
+#     apt:
+#       sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
+#       packages: [ 'clang-3.5' ]
+#   addons_clang38: &clang38
+#     apt:
+#       sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8' ]
+#       packages: [ 'clang-3.8' ]
+#   # addons_clang39: &clang39
+#   #   apt:
+#   #     sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.9' ]
+#   #     packages: [ 'clang-3.9' ]
+#   addons_gcc49: &gcc49
+#     apt:
+#       sources: [ 'ubuntu-toolchain-r-test' ]
+#       packages: [ 'g++-4.9', 'gcc-4.9' ]
+#   addons_gcc5: &gcc5
+#     apt:
+#       sources: [ 'ubuntu-toolchain-r-test' ]
+#       packages: [ 'g++-5', 'gcc-5' ]
+#   addons_gcc6: &gcc6
+#     apt:
+#       sources: [ 'ubuntu-toolchain-r-test' ]
+#       packages: [ 'g++-6', 'gcc-6', 'doxygen' ]
 
 addons:
   apt:
@@ -16,11 +42,63 @@ addons:
     sources: &sources
       - ubuntu-toolchain-r-test
 
-cache:
-  directories:
-    # - $HOME/llvm
-    # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
-    - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+# cache:
+#   directories:
+#     # - $HOME/llvm
+#     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
+#     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+
+# matrix:
+#   include:
+#     - os: osx
+#       osx_image: xcode6
+#       compiler: clang
+#     - os: osx
+#       osx_image: xcode7
+#       compiler: clang
+#     - os: osx
+#       osx_image: xcode8
+#       compiler: clang
+#     - os: linux
+#       compiler: "clang-3.5"
+#       env: CXX=clang++-3.5
+#       addons: *clang35
+#     - os: linux
+#       compiler: "clang-3.8"
+#       env: CXX=clang++-3.8
+#       addons: *clang38
+#     - os: linux
+#       compiler: "clang-3.8"
+#       env: CXX=clang++-3.8 CXX_STD=c++14
+#       addons: *clang38
+#     - os: linux
+#       compiler: "gcc-4.7"
+#       env: CXX=g++-4.7
+#       addons: *gcc47
+#     - os: linux
+#       compiler: "gcc-4.8"
+#       env: CXX=g++-4.8
+#       addons: *gcc48
+#     - os: linux
+#       compiler: "gcc-4.9"
+#       env: CXX=g++-4.9 COVERAGE=gcov-4.9
+#       addons: *gcc49
+#     - os: linux
+#       compiler: "gcc-4.9"
+#       env: CXX=g++-4.9 CXX_STD=c++14
+#       addons: *gcc49
+#     - os: linux
+#       compiler: "gcc-5"
+#       env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"
+#       addons: *gcc5
+#     - os: linux
+#       compiler: "gcc-5"
+#       env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1"
+#       addons: *gcc5
+#     - os: linux
+#       compiler: "gcc-6"
+#       env: CXX=g++-6 BUILD_DOC=1
+#       addons: *gcc6
 
 matrix:
   include:
@@ -95,9 +173,9 @@ install:
   - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
   - mkdir -p ${DEPS_DIR} && cd ${DEPS_DIR}
 
-  ############################################################################
-  # Setup default versions and override compiler if needed
-  ############################################################################
+  # ############################################################################
+  # # Setup default versions and override compiler if needed
+  # ############################################################################
   - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8.0; fi
   - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
 
@@ -116,32 +194,36 @@ install:
   - cmake --version
 
 
-  ############################################################################
-  # Install Clang, libc++ and libc++abi
-  ############################################################################
-  # - source ${TRAVIS_BUILD_DIR}/.travis/install-llvm-trusty.sh
-  - |
-    if [[ "${LLVM_VERSION}" != "" ]]; then
-      LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
-      if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
-        LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
-        LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
-        LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
-        CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
-        mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
-        travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
-        travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
-        travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
-        travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
-        (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
-        (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
-        (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
-      fi
-      export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
-      export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
-      export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
-      export PATH="${LLVM_DIR}/clang/bin:${PATH}"
-    fi
+  # ############################################################################
+  # # Install Clang, libc++ and libc++abi
+  # ############################################################################
+  # # - source ${TRAVIS_BUILD_DIR}/.travis/install-llvm-trusty.sh
+  # - |
+  #   if [[ "${LLVM_VERSION}" != "" ]]; then
+  #     LLVM_DIR=${DEPS_DIR}/llvm-${LLVM_VERSION}
+  #     if [[ -z "$(ls -A ${LLVM_DIR})" ]]; then
+  #       LLVM_URL="http://llvm.org/releases/${LLVM_VERSION}/llvm-${LLVM_VERSION}.src.tar.xz"
+  #       LIBCXX_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxx-${LLVM_VERSION}.src.tar.xz"
+  #       LIBCXXABI_URL="http://llvm.org/releases/${LLVM_VERSION}/libcxxabi-${LLVM_VERSION}.src.tar.xz"
+  #       CLANG_URL="http://llvm.org/releases/${LLVM_VERSION}/clang+llvm-${LLVM_VERSION}-x86_64-linux-gnu-ubuntu-14.04.tar.xz"
+  #       mkdir -p ${LLVM_DIR} ${LLVM_DIR}/build ${LLVM_DIR}/projects/libcxx ${LLVM_DIR}/projects/libcxxabi ${LLVM_DIR}/clang
+  #       travis_retry wget --quiet -O - ${LLVM_URL}      | tar --strip-components=1 -xJ -C ${LLVM_DIR}
+  #       travis_retry wget --quiet -O - ${LIBCXX_URL}    | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxx
+  #       travis_retry wget --quiet -O - ${LIBCXXABI_URL} | tar --strip-components=1 -xJ -C ${LLVM_DIR}/projects/libcxxabi
+  #       travis_retry wget --quiet -O - ${CLANG_URL}     | tar --strip-components=1 -xJ -C ${LLVM_DIR}/clang
+  #       (cd ${LLVM_DIR}/build && cmake .. -DCMAKE_INSTALL_PREFIX=${LLVM_DIR}/install -DCMAKE_CXX_COMPILER=clang++)
+  #       (cd ${LLVM_DIR}/build/projects/libcxx && make install -j2)
+  #       (cd ${LLVM_DIR}/build/projects/libcxxabi && make install -j2)
+  #     fi
+  #     export CXXFLAGS="-nostdinc++ -isystem ${LLVM_DIR}/install/include/c++/v1"
+  #     export LDFLAGS="-L ${LLVM_DIR}/install/lib -l c++ -l c++abi"
+  #     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
+  #     export PATH="${LLVM_DIR}/clang/bin:${PATH}"
+  #   fi
+  - wget -nv -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
+  - sudo apt-add-repository -y 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq -y clang-${LLVM_VERSION}
   - ${CXX} --version
 
 
