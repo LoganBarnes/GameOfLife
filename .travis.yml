@@ -6,43 +6,32 @@ branches:
 
 dist: trusty
 
-# # Save common build configurations as shortcuts, so we can reference them later.
-# addons_shortcuts:
-#   addons_clang35: &clang35
-#     apt:
-#       sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.5' ]
-#       packages: [ 'clang-3.5' ]
-#   addons_clang38: &clang38
-#     apt:
-#       sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.8' ]
-#       packages: [ 'clang-3.8' ]
-#   # addons_clang39: &clang39
-#   #   apt:
-#   #     sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-precise-3.9' ]
-#   #     packages: [ 'clang-3.9' ]
-#   addons_gcc49: &gcc49
-#     apt:
-#       sources: [ 'ubuntu-toolchain-r-test' ]
-#       packages: [ 'g++-4.9', 'gcc-4.9' ]
-#   addons_gcc5: &gcc5
-#     apt:
-#       sources: [ 'ubuntu-toolchain-r-test' ]
-#       packages: [ 'g++-5', 'gcc-5' ]
-#   addons_gcc6: &gcc6
-#     apt:
-#       sources: [ 'ubuntu-toolchain-r-test' ]
-#       packages: [ 'g++-6', 'gcc-6', 'doxygen' ]
-
-addons:
-  apt:
-    packages:
-      - libc++abi-dev
-      - libc++-dev
-      - llvm-3.9-dev
-      - clang-3.9
-    sources: &sources
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-trusty-3.9
+# Save common build configurations as shortcuts, so we can reference them later.
+addons_shortcuts:
+  addons_clang38: &clang38
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.8' ]
+      packages: [ 'clang-3.8' ]
+  addons_clang39: &clang39
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-3.9' ]
+      packages: [ 'clang-3.9' ]
+  addons_clang35: &clang40
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test', 'llvm-toolchain-trusty-4.0' ]
+      packages: [ 'clang-4.0' ]
+  addons_gcc49: &gcc49
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'g++-4.9', 'gcc-4.9' ]
+  addons_gcc5: &gcc5
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'g++-5', 'gcc-5' ]
+  addons_gcc6: &gcc6
+    apt:
+      sources: [ 'ubuntu-toolchain-r-test' ]
+      packages: [ 'g++-6', 'gcc-6', 'doxygen' ]
 
 # cache:
 #   directories:
@@ -50,118 +39,118 @@ addons:
 #     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8
 #     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9
 
-# matrix:
-#   include:
-#     - os: osx
-#       osx_image: xcode6
-#       compiler: clang
-#     - os: osx
-#       osx_image: xcode7
-#       compiler: clang
-#     - os: osx
-#       osx_image: xcode8
-#       compiler: clang
-#     - os: linux
-#       compiler: "clang-3.5"
-#       env: CXX=clang++-3.5
-#       addons: *clang35
-#     - os: linux
-#       compiler: "clang-3.8"
-#       env: CXX=clang++-3.8
-#       addons: *clang38
-#     - os: linux
-#       compiler: "clang-3.8"
-#       env: CXX=clang++-3.8 CXX_STD=c++14
-#       addons: *clang38
-#     - os: linux
-#       compiler: "gcc-4.7"
-#       env: CXX=g++-4.7
-#       addons: *gcc47
-#     - os: linux
-#       compiler: "gcc-4.8"
-#       env: CXX=g++-4.8
-#       addons: *gcc48
-#     - os: linux
-#       compiler: "gcc-4.9"
-#       env: CXX=g++-4.9 COVERAGE=gcov-4.9
-#       addons: *gcc49
-#     - os: linux
-#       compiler: "gcc-4.9"
-#       env: CXX=g++-4.9 CXX_STD=c++14
-#       addons: *gcc49
-#     - os: linux
-#       compiler: "gcc-5"
-#       env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"
-#       addons: *gcc5
-#     - os: linux
-#       compiler: "gcc-5"
-#       env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1"
-#       addons: *gcc5
-#     - os: linux
-#       compiler: "gcc-6"
-#       env: CXX=g++-6 BUILD_DOC=1
-#       addons: *gcc6
-
 matrix:
   include:
-
-    # # Xcode 7.3
     # - os: osx
-    #   env: BUILD_TYPE=Release SHARED=OFF
-    #   osx_image: xcode7.3
-
-    # # Xcode 8
+    #   osx_image: xcode6
+    #   compiler: clang
     # - os: osx
-    #   env: BUILD_TYPE=Release SHARED=OFF
+    #   osx_image: xcode7
+    #   compiler: clang
+    # - os: osx
     #   osx_image: xcode8
-
-    # # GCC 5
-    # - os: linux
-    #   env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-    #   compiler: gcc
-
-    # # GCC 6
-    # - os: linux
-    #   env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-    #   compiler: gcc
-
-    # # clang 3.8
-    # - os: linux
-    #   env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-    #   compiler: "clang-3.8"
-
-    # clang 3.9 (cuda not supported)
+    #   compiler: clang
     - os: linux
-      env: BUILD_TYPE=Release SHARED=OFF C_COMPILER=clang-3.9 CXX_COMPILER=clang++-3.9 CXXFLAGS=-stdlib=libc++
+      compiler: "clang-3.8"
+      env: CXX=clang++-3.8 CXXFLAGS=-stdlib=libc++
+      addons: *clang38
+    - os: linux
       compiler: "clang-3.9"
-
-    # # shared libs
+      env: CXX=clang++-3.9 CXXFLAGS=-stdlib=libc++
+      addons: *clang39
+    - os: linux
+      compiler: "clang-4.0"
+      env: CXX=clang++-4.0 CXXFLAGS=-stdlib=libc++
+      addons: *clang40
     # - os: linux
-    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-    #   compiler: clang
-
-    # # shared libs
+    #   compiler: "gcc-4.7"
+    #   env: CXX=g++-4.7
+    #   addons: *gcc47
     # - os: linux
-    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-    #   compiler: clang
-
-    # # Shared libs
-    # - os: osx
-    #   env: BUILD_TYPE=Release SHARED=ON
-    #   osx_image: xcode8
-
+    #   compiler: "gcc-4.8"
+    #   env: CXX=g++-4.8
+    #   addons: *gcc48
     # - os: linux
-    #   env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
-    #   compiler: clang
-
-    # # Debug
-    # - os: osx
-    #   env: BUILD_TYPE=Debug SHARED=OFF
-    #   osx_image: xcode8
-
+    #   compiler: "gcc-4.9"
+    #   env: CXX=g++-4.9 COVERAGE=gcov-4.9
+    #   addons: *gcc49
     # - os: linux
-    #   env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
-    #   compiler: clang
+    #   compiler: "gcc-4.9"
+    #   env: CXX=g++-4.9 CXX_STD=c++14
+    #   addons: *gcc49
+    # - os: linux
+    #   compiler: "gcc-5"
+    #   env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=0"
+    #   addons: *gcc5
+    # - os: linux
+    #   compiler: "gcc-5"
+    #   env: CXX=g++-5 CXXFLAGS="-D_GLIBCXX_USE_CXX11_ABI=1"
+    #   addons: *gcc5
+    # - os: linux
+    #   compiler: "gcc-6"
+    #   env: CXX=g++-6 BUILD_DOC=1
+    #   addons: *gcc6
+
+# matrix:
+#   include:
+
+#     # Xcode 7.3
+#     - os: osx
+#       env: BUILD_TYPE=Release SHARED=OFF
+#       osx_image: xcode7.3
+
+#     # Xcode 8
+#     - os: osx
+#       env: BUILD_TYPE=Release SHARED=OFF
+#       osx_image: xcode8
+
+#     # GCC 5
+#     - os: linux
+#       env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+#       compiler: gcc
+
+#     # GCC 6
+#     - os: linux
+#       env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+#       compiler: gcc
+
+#     # clang 3.8
+#     - os: linux
+#       env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+#       compiler: "clang-3.8"
+
+#     # clang 3.9 (cuda not supported)
+#     - os: linux
+#       env: BUILD_TYPE=Release SHARED=OFF C_COMPILER=clang-3.9 CXX_COMPILER=clang++-3.9 CXXFLAGS=-stdlib=libc++
+#       compiler: "clang-3.9"
+
+#     # shared libs
+#     - os: linux
+#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+#       compiler: clang
+
+#     # shared libs
+#     - os: linux
+#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+#       compiler: clang
+
+#     # Shared libs
+#     - os: osx
+#       env: BUILD_TYPE=Release SHARED=ON
+#       osx_image: xcode8
+
+#     - os: linux
+#       env: LLVM_VERSION=default BUILD_TYPE=Release SHARED=ON CUDA=8.0.44-1
+#       compiler: clang
+
+#     # Debug
+#     - os: osx
+#       env: BUILD_TYPE=Debug SHARED=OFF
+#       osx_image: xcode8
+
+#     - os: linux
+#       env: LLVM_VERSION=default BUILD_TYPE=Debug SHARED=OFF CUDA=8.0.44-1
+#       compiler: clang
 
 install:
   - |
@@ -178,9 +167,9 @@ install:
   # ############################################################################
   # # Setup default versions and override compiler if needed
   # ############################################################################
-  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8; fi
-  - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
-  - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
+  # - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8; fi
+  # - if [[ "${C_COMPILER}" != "" ]]; then export CC=${C_COMPILER}; fi
+  # - if [[ "${CXX_COMPILER}" != "" ]]; then export CXX=${CXX_COMPILER}; fi
 
 
   ############################################################################
