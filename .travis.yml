@@ -171,7 +171,7 @@ install:
   # # Setup default versions and override compiler if needed
   # ############################################################################
   - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
-  - if [[ "${LLVM}" != "" ]]; then export CC=clang-${LLVM}; export clang++-${LLVM}; fi
+  - if [[ "${LLVM}" != "" ]]; then export CC=clang-${LLVM}; export CXX=clang++-${LLVM}; fi
 
 
   ############################################################################
