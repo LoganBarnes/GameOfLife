@@ -125,7 +125,7 @@ matrix:
     # clang 3.8
     - os: linux
       env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-      compiler: clang
+      compiler: clang-3.8
 
     # # clang 3.9 (cuda not supported)
     # - os: linux
@@ -222,9 +222,9 @@ install:
   - |
     if [[ "${LLVM_VERSION}" != "" ]]; then
       wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-      sudo apt-add-repository 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-3.8 main'
+      sudo apt-add-repository 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
       sudo apt-get update
-      sudo apt-get install clang-3.8
+      sudo apt-get install clang-${LLVM_VERSION}
     fi
   - ${CXX} --version
 
