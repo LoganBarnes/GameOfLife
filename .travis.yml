@@ -11,15 +11,15 @@ addons_shortcuts:
   addons_clang38: &clang38
     apt:
       sources: [ 'llvm-toolchain-trusty-3.8' ]
-      packages: [ 'clang-3.8', 'libc++-dev', 'libc++abi-dev' ]
+      packages: [ 'clang-3.8', 'libc++-dev' ]
   addons_clang39: &clang39
     apt:
       sources: [ 'llvm-toolchain-trusty-3.9' ]
-      packages: [ 'clang-3.9', 'libc++-dev', 'libc++abi-dev' ]
+      packages: [ 'clang-3.9', 'libc++-dev' ]
   addons_clang35: &clang40
     apt:
       sources: [ 'llvm-toolchain-trusty-4.0' ]
-      packages: [ 'clang-4.0', 'libc++-dev', 'libc++abi-dev' ]
+      packages: [ 'clang-4.0', 'libc++-dev' ]
   addons_gcc49: &gcc49
     apt:
       packages: [ 'g++-4.9', 'gcc-4.9' ]
