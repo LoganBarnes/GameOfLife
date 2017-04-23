@@ -7,6 +7,7 @@ option( STRICT_FLAGS "Compile with strict error and warning flags" OFF )
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DownloadProject.cmake )
+set( CMAKE_MACOSX_RPATH TRUE )
 
 
 # compile flags

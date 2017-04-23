@@ -85,11 +85,47 @@ matrix:
       env: GCC=6 CUDA=8.0.44-1
       addons: *gcc6
 
+    # SHARED LIBS
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: SHARED=ON
+    - os: linux
+      compiler: "clang-3.8"
+      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON
+      addons: *clang38
+
+    # DEBUG
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: BUILD_TYPE=Debug
+    - os: linux
+      compiler: "clang-3.8"
+      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 BUILD_TYPE=Debug
+      addons: *clang38
+
+    # DEBUG SHARED LIBS
+    - os: osx
+      osx_image: xcode8
+      compiler: clang
+      env: SHARED=ON BUILD_TYPE=Debug
+    - os: linux
+      compiler: "clang-3.8"
+      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
+      addons: *clang38
+
+
 before_install:
   - |
     if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
       brew update
     fi
+
+  ############################################################################
+  # Set build type to default Release value
+  ############################################################################
+  - if [[ "${BUILD_TYPE}" == "" ]]; then BUILD_TYPE=Release; fi
 
   ############################################################################
   # Setup default versions and override compiler if needed
