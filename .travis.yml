@@ -38,7 +38,6 @@ addons:
     packages:
       - g++-5
       - g++-6
-      - gcc-c++
     sources: &sources
       - ubuntu-toolchain-r-test
 
@@ -220,10 +219,13 @@ install:
   #     export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${LLVM_DIR}/install/lib"
   #     export PATH="${LLVM_DIR}/clang/bin:${PATH}"
   #   fi
-  - wget -nv -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-  - sudo apt-add-repository -y 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq -y clang-${LLVM_VERSION}
+  -|
+    if [[ "${LLVM_VERSION}" != "" ]]; then
+      wget -nv -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
+      sudo apt-add-repository -y 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
+      sudo apt-get update -qq
+      sudo apt-get install -qq -y clang-${LLVM_VERSION}
+    fi
   - ${CXX} --version
 
 
