@@ -102,10 +102,10 @@ addons:
 matrix:
   include:
 
-    # Xcode 7.3
-    - os: osx
-      env: BUILD_TYPE=Release SHARED=OFF
-      osx_image: xcode7.3
+    # # Xcode 7.3
+    # - os: osx
+    #   env: BUILD_TYPE=Release SHARED=OFF
+    #   osx_image: xcode7.3
 
     # # Xcode 8
     # - os: osx
@@ -117,20 +117,20 @@ matrix:
     #   env: COMPILER=g++-5 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
     #   compiler: gcc
 
-    # GCC 6
-    - os: linux
-      env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
-      compiler: gcc
+    # # GCC 6
+    # - os: linux
+    #   env: COMPILER=g++-6 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+    #   compiler: gcc
 
     # clang 3.8
     - os: linux
       env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
-    # clang 3.9 (cuda not supported)
-    - os: linux
-      env: LLVM_VERSION=3.9 BUILD_TYPE=Release SHARED=OFF
-      compiler: clang
+    # # clang 3.9 (cuda not supported)
+    # - os: linux
+    #   env: LLVM_VERSION=3.9 BUILD_TYPE=Release SHARED=OFF
+    #   compiler: clang
 
     # # shared libs
     # - os: linux
@@ -221,10 +221,10 @@ install:
   #   fi
   - |
     if [[ "${LLVM_VERSION}" != "" ]]; then
-      wget -nv -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
-      sudo apt-add-repository -y 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-${LLVM_VERSION} main'
-      sudo apt-get update -qq
-      sudo apt-get install -qq -y clang-${LLVM_VERSION}
+      wget -O - http://llvm.org/apt/llvm-snapshot.gpg.key | sudo apt-key add -
+      sudo apt-add-repository 'deb http://llvm.org/apt/trusty llvm-toolchain-trusty-3.8 main'
+      sudo apt-get update
+      sudo apt-get install clang-3.8
     fi
   - ${CXX} --version
 
@@ -232,15 +232,13 @@ install:
   ############################################################################
   # Install a CUDA
   ############################################################################
-  - |
-    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
-      if [[ "${CUDA}" != "" ]]; then
-        source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh
-      fi
-    # else
-    #   brew upgrade Caskroom/cask/cuda || travis_retry brew cask install cuda
-    fi
-  - if [[ "${TRAVIS_OS_NAME}" == "linux" && "${CUDA}" != "" ]]; then nvcc --version; fi;
+  # - |
+  #   if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+  #     if [[ "${CUDA}" != "" ]]; then
+  #       source ${TRAVIS_BUILD_DIR}/.travis/install-cuda-trusty.sh
+  #     fi
+  #   fi
+  # - if [[ "${TRAVIS_OS_NAME}" == "linux" && "${CUDA}" != "" ]]; then nvcc --version; fi;
 
 before_script:
   - cd ${TRAVIS_BUILD_DIR}
