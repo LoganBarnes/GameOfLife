@@ -44,18 +44,18 @@ matrix:
     # - os: osx
     #   osx_image: xcode8
     #   compiler: clang
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=7.5-18
-      addons: *clang38
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
-      addons: *clang38
-    - os: linux
-      compiler: "clang-3.9"
-      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
-      addons: *clang39
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=7.5-18
+    #   addons: *clang38
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
+    #   addons: *clang38
+    # - os: linux
+    #   compiler: "clang-3.9"
+    #   env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+    #   addons: *clang39
     - os: linux
       compiler: "clang-4.0"
       env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
@@ -100,6 +100,7 @@ before_install:
       # export CXX=clang++-${LLVM}
       sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM} 1
       sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM} 1
+      sudo update-alternatives --display clang++
     fi
   - |
     if [[ "${GCC}" != "" ]]; then
