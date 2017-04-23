@@ -44,8 +44,8 @@ addons:
 # cache:
 #   directories:
 #     # - $HOME/llvm
-#     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8.0
-#     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9.0
+#     # - ${TRAVIS_BUILD_DIR}/deps/llvm-3.8
+#     - ${TRAVIS_BUILD_DIR}/deps/llvm-3.9
 
 # matrix:
 #   include:
@@ -124,12 +124,12 @@ matrix:
 
     # clang 3.8
     - os: linux
-      env: LLVM_VERSION=3.8.0 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
+      env: LLVM_VERSION=3.8 BUILD_TYPE=Release SHARED=OFF CUDA=8.0.44-1
       compiler: clang
 
     # clang 3.9 (cuda not supported)
     - os: linux
-      env: LLVM_VERSION=3.9.0 BUILD_TYPE=Release SHARED=OFF
+      env: LLVM_VERSION=3.9 BUILD_TYPE=Release SHARED=OFF
       compiler: clang
 
     # # shared libs
@@ -175,7 +175,7 @@ install:
   # ############################################################################
   # # Setup default versions and override compiler if needed
   # ############################################################################
-  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8.0; fi
+  - if [[ "${LLVM_VERSION}" == "default" ]]; then LLVM_VERSION=3.8; fi
   - if [[ "${COMPILER}" != "" ]]; then export CXX=${COMPILER}; fi
 
 
