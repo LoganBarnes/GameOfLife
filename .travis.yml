@@ -36,7 +36,10 @@ dist: trusty
 addons:
   apt:
     packages:
-      - clang-3.9
+      - libc++abi-dev
+      - libc++-dev
+      - llvm-3.9-dev
+      - clang-3.9-dev
     sources: &sources
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-3.9
@@ -197,8 +200,8 @@ install:
   # ############################################################################
   # # Install Clang, libc++ and libc++abi
   # ############################################################################
-  - export CXXFLAGS="-nostdinc++"
-  - export LDFLAGS="-l c++ -l c++abi"
+  # - export CXXFLAGS="-nostdinc++"
+  # - export LDFLAGS="-l c++ -l c++abi"
   # - source ${TRAVIS_BUILD_DIR}/.travis/install-llvm-trusty.sh
   # - |
   #   if [[ "${LLVM_VERSION}" != "" ]]; then
