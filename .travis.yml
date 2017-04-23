@@ -5,13 +5,14 @@ branches:
     - master
 
 sudo: required
-dist: trusty
+# dist: trusty
 
 addons:
   apt:
     packages:
       - g++-5
       - g++-6
+      - gcc-c++
     sources: &sources
       - ubuntu-toolchain-r-test
 
