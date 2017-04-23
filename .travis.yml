@@ -54,18 +54,18 @@ matrix:
     # - os: osx
     #   osx_image: xcode8
     #   compiler: clang
-    # - os: linux
-    #   compiler: "clang-3.8"
-    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++
-    #   addons: *clang38
-    # - os: linux
-    #   compiler: "clang-3.9"
-    #   env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
-    #   addons: *clang39
-    # - os: linux
-    #   compiler: "clang-4.0"
-    #   env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
-    #   addons: *clang40
+    - os: linux
+      compiler: "clang-3.8"
+      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++
+      addons: *clang38
+    - os: linux
+      compiler: "clang-3.9"
+      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+      addons: *clang39
+    - os: linux
+      compiler: "clang-4.0"
+      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
+      addons: *clang40
     - os: linux
       compiler: "g++-4.9"
       env: GCC=4.9
@@ -91,14 +91,15 @@ before_install:
   - if [[ "${LLVM}" == "default" ]]; then LLVM=3.8; fi
   - |
     if [[ "${LLVM}" != "" ]]; then
-      export CXX=clang++-${LLVM}
-      clang --version
+      # export CXX=clang++-${LLVM}
+      sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-${LLVM} 1
+      sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-${LLVM} 1
     fi
   - |
     if [[ "${GCC}" != "" ]]; then
       # export CXX=g++-${GCC}
-      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 1
-      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 1
+      sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${GCC} 1
+      sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${GCC} 1
     fi
   - ${CXX} --version
 
