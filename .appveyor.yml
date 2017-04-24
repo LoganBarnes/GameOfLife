@@ -57,6 +57,7 @@ build_script:
   - cd build
   - cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_SHARED_LIBS=OFF ..
   - cmake --build . --config %BUILD_MODE% -- /m
+  - cd ..
 
 # to disable automatic builds
 #build: off
@@ -67,7 +68,7 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  - Release\testGameOfLife.exe --gtest_filter=Cpu*
+  - build\Release\testGameOfLife.exe --gtest_filter=Cpu*
 
 
 #---------------------------------#
