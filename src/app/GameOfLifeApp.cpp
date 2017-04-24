@@ -2,13 +2,15 @@
 #include "GameOfLifeApp.hpp"
 #include "cpu/GameOfLifeCpu.hpp"
 
+#include <ncurses.h>
+
 #include <iostream>
 #include <cstdlib>
 #include <random>
 #include <algorithm>
 #include <chrono>
 #include <stdexcept>
-#include <ncurses.h>
+#include <limits>
 
 
 
@@ -86,14 +88,16 @@ GameOfLifeApp::exec(
   std::vector< GolBool >::size_type h = 10;
   double propStep                     = 0.0;
   double renderStep                   = 0.0;
+  unsigned long long maxIterations    = std::numeric_limits< unsigned long long >::max( );
 
-  auto seed = std::chrono::high_resolution_clock::now( ).time_since_epoch( ).count( );
+  unsigned long long seed = std::chrono::high_resolution_clock::now( ).time_since_epoch( ).count( );
 
   std::string wStr( "-w=" );
   std::string hStr( "-h=" );
   std::string tStr( "-t=" );
   std::string rStr( "-r=" );
   std::string sStr( "-s=" );
+  std::string iStr( "-i=" );
 
   for ( int i = 1; i < argc; ++i )
   {
@@ -130,6 +134,12 @@ GameOfLifeApp::exec(
         std::mismatch( sStr.begin( ), sStr.end( ), arg.begin( ) ).first == sStr.end( ) )
     {
       seed = std::stoll( arg.substr( sStr.size( ) ) );
+    }
+
+    if ( arg.size( ) > iStr.size( ) &&
+        std::mismatch( iStr.begin( ), iStr.end( ), arg.begin( ) ).first == iStr.end( ) )
+    {
+      maxIterations = std::stoll( arg.substr( iStr.size( ) ) );
     }
   }
 
@@ -180,6 +190,7 @@ GameOfLifeApp::exec(
   decltype( propStart )propEnd, renderEnd;
   std::chrono::duration< double > seconds;
 
+  decltype( maxIterations )iteration = 0;
   GolBool quitLoop = false;
 
   while ( !quitLoop )
@@ -216,7 +227,15 @@ GameOfLifeApp::exec(
       break;
     } // switch
 
-  }
+    if (
+        maxIterations < std::numeric_limits< decltype( maxIterations ) >::max( )
+        && ++iteration > maxIterations
+        )
+    {
+      quitLoop = true;
+    }
+
+  } // end while
 
   if ( pWindow )
   {
