@@ -55,7 +55,7 @@ private:
   void _startThreadPool ( unsigned numThreads );
   void _killThreads ( );
 
-  std::vector< GolBool > prevState_;
+  std::vector< GolBool >     prevState_;
   std::vector< std::thread > threads_;
 
   bool threadsRunning_;

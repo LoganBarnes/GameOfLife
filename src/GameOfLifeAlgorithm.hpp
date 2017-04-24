@@ -17,17 +17,18 @@ struct dim3
   uint z;
 
   dim3(
-        uint x_ = 1,
-        uint y_ = 1,
-        uint z_ = 1
-        )
+       uint x_ = 1,
+       uint y_ = 1,
+       uint z_ = 1
+       )
     : x( x_ )
     , y( y_ )
     , z( z_ )
   {}
 };
+
 #define CUDA_DEVICE
-#endif
+#endif // ifdef __CUDACC__
 
 
 namespace gol
@@ -45,11 +46,11 @@ namespace gol
 CUDA_DEVICE
 GolBool
 findNeighbors(
-               const GolBool *pPrev,
-               const dim3     dim,
-               const uint     x,
-               const uint     y
-               )
+              const GolBool *pPrev,
+              const dim3     dim,
+              const uint     x,
+              const uint     y
+              )
 {
   uint neighbors = 0;
 
@@ -99,5 +100,7 @@ findNeighbors(
 
   return state;
 } // findNeighbors
+
+
 
 } // namespace gol

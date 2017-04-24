@@ -23,8 +23,8 @@ public:
   explicit
   GameOfLife(
              std::vector< GolBool > initState,
-             SizeType            width,
-             SizeType            height
+             SizeType               width,
+             SizeType               height
              )
     : state_ ( initState )
     , width_ ( width )
@@ -32,7 +32,7 @@ public:
   {}
 
   virtual
-  ~GameOfLife() = default;
+  ~GameOfLife( ) = default;
 
   SizeType
   getWidth( ) { return width_; }

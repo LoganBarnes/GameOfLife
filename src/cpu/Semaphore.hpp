@@ -42,6 +42,7 @@ public:
     {
       condition_.wait( lock );
     }
+
     --count_;
   }
 

@@ -7,7 +7,10 @@
 
 
 int
-main( const int argc, const char **argv )
+main(
+     const int    argc,
+     const char **argv
+     )
 {
   try
   {

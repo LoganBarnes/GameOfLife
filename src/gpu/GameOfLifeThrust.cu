@@ -70,8 +70,6 @@ const CudaPrep cudaPrep;
 
 
 
-
-
 ///
 /// \brief The PropogateFunctor struct
 ///
@@ -82,7 +80,7 @@ struct PropogateFunctor
 
   PropogateFunctor(
                    const GolBool *d_prev_,
-                   const dim3  dim_
+                   const dim3     dim_
                    )
     : d_prev( d_prev_ )
     , dim( dim_ )
@@ -119,7 +117,7 @@ public:
 
   explicit
   GoLThrustImpl(
-                const std::vector< GolBool >      &initState,
+                const std::vector< GolBool >     &initState,
                 std::vector< GolBool >::size_type width,
                 std::vector< GolBool >::size_type height
                 );
@@ -130,7 +128,8 @@ public:
 
   const thrust::device_vector< GolBool > &getState ( );
 
-  GolBool updateSinceGetState ( ) const { return updateSinceGetState_; }
+  GolBool
+  updateSinceGetState( ) const { return updateSinceGetState_; }
 
 
 private:
@@ -152,7 +151,7 @@ private:
 /// \param width
 ///
 GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl(
-                                               const std::vector< GolBool >      &initState,
+                                               const std::vector< GolBool >     &initState,
                                                std::vector< GolBool >::size_type width,
                                                std::vector< GolBool >::size_type height
                                                )
@@ -163,9 +162,9 @@ GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl(
   , updateSinceGetState_( true )
 {
   checkCudaErrors( cudaMemcpy(
-                              thrust::raw_pointer_cast( dCurrState_.data() ),
+                              thrust::raw_pointer_cast( dCurrState_.data( ) ),
                               initState.data( ),
-                              dCurrState_.size() * sizeof( GolBool ),
+                              dCurrState_.size( ) * sizeof( GolBool ),
                               cudaMemcpyHostToDevice
                               ) );
 }
@@ -180,7 +179,7 @@ GameOfLifeThrust::GoLThrustImpl::propogateState( )
 {
   dPrevState_.swap( dCurrState_ ); // O(1) just swaps pointers
 
-  dim3 dim( static_cast< unsigned >( width_), static_cast< unsigned >( height_ ) );
+  dim3 dim( static_cast< unsigned >( width_ ), static_cast< unsigned >( height_ ) );
 
   thrust::counting_iterator< uint > first( 0 );
   thrust::counting_iterator< uint > last = first + dCurrState_.size( );
