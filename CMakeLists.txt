@@ -54,7 +54,7 @@ endif( )
 ###################################################
 ###                    CUDA                     ###
 ###################################################
-find_package( CUDA )
+# find_package( CUDA )
 
 if ( ${CUDA_FOUND} )
 
@@ -82,6 +82,7 @@ if ( ${CUDA_FOUND} )
 
   list( APPEND PROJECT_NVCC_FLAGS ${CUDA_ARCH_FLAGS} )
 
+  include_directories( SYSTEM ${CUDA_INCLUDE_DIRS} )
 
   ###
   ### build CUDA library
@@ -99,9 +100,10 @@ if ( ${CUDA_FOUND} )
 
   set_target_properties(
                         golCuda PROPERTIES
-                        CXX_STANDARD          14
+                        CXX_STANDARD          11
                         CXX_STANDARD_REQUIRED ON
                         )
+
 
   if ( PROJECT_CPP_FLAGS )
     set_target_properties( golCuda PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )
