@@ -229,6 +229,14 @@ GameOfLifeThrust::GameOfLifeThrust(
 
 
 ///
+/// \brief GameOfLifeThrust::~GameOfLifeThrust
+///
+GameOfLifeThrust::~GameOfLifeThrust( )
+{}
+
+
+
+///
 /// \brief GameOfLifeThrust::propogateState
 ///
 void

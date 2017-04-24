@@ -19,6 +19,8 @@ public:
                    SizeType               height
                    );
 
+  ~GameOfLifeThrust( );
+
   virtual
   void propogateState ( ) final;
 

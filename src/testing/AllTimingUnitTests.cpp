@@ -40,7 +40,11 @@ protected:
 /// \brief UnimplementedTest
 /////////////////////////////////////////////////////////////////
 TEST_F( AllTimingUnitTests, UnimplementedTest )
-{}
+{
+  std::vector< GolBool > v = { true, false, false, true };
+  gol::GameOfLifeThrust gol( v, 2, 2 );
+  gol.propogateState( );
+}
 
 
 
