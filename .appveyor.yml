@@ -35,9 +35,11 @@ init:
 clone_folder: c:\projects\myproject
 
 environment:
-    matrix:
-        - BUILD_SHARED_LIBS: ON
-        - BUILD_SHARED_LIBS: OFF
+  matrix:
+    - BUILD_MODE: Debug
+    - BUILD_MODE: Release
+        # - BUILD_SHARED_LIBS: ON
+        # - BUILD_SHARED_LIBS: OFF
 matrix:
     fast_finish: true
 
@@ -50,8 +52,8 @@ matrix:
 build_script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_SHARED_LIBS=%BUILD_SHARED_LIBS% ..
-  - cmake --build . --config Release -- /m
+  - cmake -DBUILD_SHARED_LIBS=OFF ..
+  - cmake --build . --config %BUILD_MODE -- /m
 
 # to disable automatic builds
 #build: off
