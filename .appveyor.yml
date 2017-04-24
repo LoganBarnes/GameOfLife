@@ -55,7 +55,7 @@ platform: x64
 build_script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_SHARED_LIBS=OFF ..
+  - cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_SHARED_LIBS=OFF ..
   - cmake --build . --config %BUILD_MODE -- /m
 
 # to disable automatic builds
