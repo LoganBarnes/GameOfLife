@@ -58,8 +58,8 @@ find_package( CUDA )
 
 if ( ${CUDA_FOUND} )
 
-  include_directories( SYSTEM ${CUDA_INCLUDE_DIRS} ${SRC_DIR}/gpu/cuda_helpers )
-  include_directories(        ${SRC_DIR}                  )
+  include_directories( SYSTEM ${SRC_DIR}/gpu/cuda_helpers )
+  include_directories(        ${SRC_DIR}                                       )
 
   ###
   ### set nvcc options
