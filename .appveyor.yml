@@ -34,7 +34,7 @@ clone_folder: c:\projects\GameOfLife
 install:
   - echo Downloading CUDA toolkit 8
   - appveyor DownloadFile https://www.dropbox.com/s/s2ohvfp4u0f34tg/cuda.zip?dl=1
-  - 7z x cuda.zip -o cuda
+  - 7z x cuda.zip -ocuda
   - dir
   - cd cuda
   - dir
