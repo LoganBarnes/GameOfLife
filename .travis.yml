@@ -193,18 +193,18 @@ script:
   - cmake --build . -- -j12
 
   ############################################################################
-  # Run CPU unit test only (GPU stuff won't work with travis)
-  ############################################################################
-  - ./testGameOfLife --gtest_filter=Cpu*
-
-  ############################################################################
   # Run program if ncurses was found and the executable was created
   ############################################################################
   - |
     if [ -f gameOfLife ]; then
-      ./gameOfLife -w=100 -h=60 -s=7 -i=1000
-      ./gameOfLife -w=100 -h=60 -s=7 -i=1000 -mt # multithreaded
+      time ./build/gameOfLife -w=1000 -h=600 -s=7 -i=500 -np
+      time ./build/gameOfLife -w=1000 -h=600 -s=7 -i=500 -np -mt # multithreaded
     fi
+
+  ############################################################################
+  # Run CPU unit test only (GPU stuff won't work with travis)
+  ############################################################################
+  - ./testGameOfLife --gtest_filter=Cpu*
 
 notifications:
   on_success: never

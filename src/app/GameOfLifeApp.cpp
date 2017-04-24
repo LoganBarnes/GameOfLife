@@ -81,8 +81,9 @@ GameOfLifeApp::exec(
   //
   // parse arguments
   //
-  GolBool runFast     = false;
-  GolBool multithread = false;
+  bool runFast     = false;
+  bool multithread = false;
+  bool noPrint     = false;
 
   std::vector< GolBool >::size_type w = 10;
   std::vector< GolBool >::size_type h = 10;
@@ -105,6 +106,7 @@ GameOfLifeApp::exec(
 
     runFast     |= ( arg == "-f" );
     multithread |= ( arg == "-mt" );
+    noPrint     |= ( arg == "-np" );
 
     if ( arg.size( ) > wStr.size( ) &&
         std::mismatch( wStr.begin( ), wStr.end( ), arg.begin( ) ).first == wStr.end( ) )
@@ -182,7 +184,11 @@ GameOfLifeApp::exec(
                 );
 
   GameOfLifeCpu game( state, w, h, multithread );
-  renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+
+  if ( !noPrint )
+  {
+    renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+  }
 
 
   auto propStart   = std::chrono::steady_clock::now( );
@@ -208,7 +214,11 @@ GameOfLifeApp::exec(
 
     if ( seconds.count( ) > renderStep )
     {
-      renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+      if ( !noPrint )
+      {
+        renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+      }
+
       renderStart = renderEnd;
     }
 
