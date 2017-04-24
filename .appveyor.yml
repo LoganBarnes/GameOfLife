@@ -68,7 +68,7 @@ build_script:
 
 # to run your custom scripts instead of automatic tests
 test_script:
-  -build\%BUILD_MODE%\testGameOfLife.exe --gtest_filter=Cpu*
+  - build\%BUILD_MODE%\testGameOfLife.exe --gtest_filter=Cpu*
 
 
 #---------------------------------#
