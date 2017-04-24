@@ -35,8 +35,8 @@ install:
   - echo Downloading CUDA toolkit 8
   - mkdir cuda
   - cd cuda
-  - appveyor DownloadFile https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_win10-exe cuda_8.0.61_win10.exe
-  - dir
+  - appveyor DownloadFile https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_win10-exe
+  - move cuda_8.0.61_win10-exe cuda_8.0.61_win10.exe
   - cuda_8.0.61_win10.exe -s compiler_8.0 cudart_8.0
 
   - echo Installing VS integration
