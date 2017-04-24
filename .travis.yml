@@ -35,81 +35,81 @@ addons_shortcuts:
 
 matrix:
   include:
-    - os: osx
-      osx_image: xcode6
-      compiler: clang
-    - os: osx
-      osx_image: xcode7
-      compiler: clang
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=7.5-18
-      addons: *clang38
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
-      addons: *clang38
-    - os: linux
-      compiler: "clang-3.9"
-      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
-      addons: *clang39
-    - os: linux
-      compiler: "clang-4.0"
-      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
-      addons: *clang40
-    - os: linux
-      compiler: "g++-4.9"
-      env: GCC=4.9 CUDA=7.5-18
-      addons: *gcc49
-    - os: linux
-      compiler: "g++-4.9"
-      env: GCC=4.9 CUDA=8.0.44-1
-      addons: *gcc49
-    - os: linux
-      compiler: "g++-5"
-      env: GCC=5 CUDA=7.5-18
-      addons: *gcc5
-    - os: linux
-      compiler: "g++-5"
-      env: GCC=5 CUDA=8.0.44-1
-      addons: *gcc5
-    - os: linux
-      compiler: "g++-6"
-      env: GCC=6 CUDA=7.5-18
-      addons: *gcc6
-    - os: linux
-      compiler: "g++-6"
-      env: GCC=6 CUDA=8.0.44-1
-      addons: *gcc6
+    # - os: osx
+    #   osx_image: xcode6
+    #   compiler: clang
+    # - os: osx
+    #   osx_image: xcode7
+    #   compiler: clang
+    # - os: osx
+    #   osx_image: xcode8
+    #   compiler: clang
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=7.5-18
+    #   addons: *clang38
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
+    #   addons: *clang38
+    # - os: linux
+    #   compiler: "clang-3.9"
+    #   env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+    #   addons: *clang39
+    # - os: linux
+    #   compiler: "clang-4.0"
+    #   env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
+    #   addons: *clang40
+    # - os: linux
+    #   compiler: "g++-4.9"
+    #   env: GCC=4.9 CUDA=7.5-18
+    #   addons: *gcc49
+    # - os: linux
+    #   compiler: "g++-4.9"
+    #   env: GCC=4.9 CUDA=8.0.44-1
+    #   addons: *gcc49
+    # - os: linux
+    #   compiler: "g++-5"
+    #   env: GCC=5 CUDA=7.5-18
+    #   addons: *gcc5
+    # - os: linux
+    #   compiler: "g++-5"
+    #   env: GCC=5 CUDA=8.0.44-1
+    #   addons: *gcc5
+    # - os: linux
+    #   compiler: "g++-6"
+    #   env: GCC=6 CUDA=7.5-18
+    #   addons: *gcc6
+    # - os: linux
+    #   compiler: "g++-6"
+    #   env: GCC=6 CUDA=8.0.44-1
+    #   addons: *gcc6
 
-    # SHARED LIBS
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      env: SHARED=ON
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON
-      addons: *clang38
+    # # SHARED LIBS
+    # - os: osx
+    #   osx_image: xcode8
+    #   compiler: clang
+    #   env: SHARED=ON
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON
+    #   addons: *clang38
 
-    # DEBUG
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      env: BUILD_TYPE=Debug
-    - os: linux
-      compiler: "clang-3.8"
-      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 BUILD_TYPE=Debug
-      addons: *clang38
+    # # DEBUG
+    # - os: osx
+    #   osx_image: xcode8
+    #   compiler: clang
+    #   env: BUILD_TYPE=Debug
+    # - os: linux
+    #   compiler: "clang-3.8"
+    #   env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 BUILD_TYPE=Debug
+    #   addons: *clang38
 
-    # DEBUG SHARED LIBS
-    - os: osx
-      osx_image: xcode8
-      compiler: clang
-      env: SHARED=ON BUILD_TYPE=Debug
+    # # DEBUG SHARED LIBS
+    # - os: osx
+    #   osx_image: xcode8
+    #   compiler: clang
+    #   env: SHARED=ON BUILD_TYPE=Debug
     - os: linux
       compiler: "clang-3.8"
       env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
@@ -195,7 +195,12 @@ script:
   ############################################################################
   # Run program if ncurses was found and the executable was created
   ############################################################################
-  - |
+  - | #  default run with single iteration and output to terminal
+    if [ -f gameOfLife ]; then
+      ./gameOfLife -i=1
+      ./gameOfLife -i=1 -mt # multithreaded
+    fi
+  - | # large run with multiple iterations and no output
     if [ -f gameOfLife ]; then
       time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np
       time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np -mt # multithreaded

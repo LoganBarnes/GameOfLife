@@ -5,6 +5,7 @@
 #include "GameOfLifeAlgorithm.hpp"
 
 #include <iostream>
+#include <cassert>
 
 
 namespace
@@ -157,38 +158,64 @@ GameOfLifeCpu::_startThreadPool( unsigned numThreads )
   // prevent threads from exiting
   threadsRunning_ = true;
 
-  std::cout << "Orig: " << numThreads << std::endl;
   //
   // determine the number of rows each thread should process
   //
-  unsigned uHeight = static_cast< unsigned >( height_ );
-  auto rowsPerThread = uHeight / numThreads;
-  numThreads = uHeight / rowsPerThread;
+  unsigned uHeight       = static_cast< unsigned >( height_ );
+  unsigned rowsPerThread = 1, extraRows = 0;
 
-  auto extraRows = uHeight - numThreads * rowsPerThread;
-
-  std::cout << "New: " << numThreads << std::endl;
-  std::cout << "Extra: " << extraRows << std::endl;
-
-  for ( unsigned i = 0; i < numThreads; ++i )
+  if ( numThreads > uHeight )
   {
+    numThreads = uHeight;
+  }
+  else
+  {
+    rowsPerThread = uHeight / numThreads;
+
+    extraRows = uHeight - numThreads * rowsPerThread;
+  }
+
+  unsigned rowStart, rowEnd;
+
+  //
+  // if the rows don't divide evenly amongst the threads
+  // (aka there is some remainder 'r') then add an extra
+  // row to the first r threads
+  //
+  ++rowsPerThread;
+  unsigned i = 0;
+  for ( ; i < extraRows; ++i )
+  {
+    rowStart = i * rowsPerThread;
+    rowEnd   = rowStart + rowsPerThread;
+
     threads_.push_back( std::thread(
                                     &GameOfLifeCpu::_propogateStateThreaded,
                                     this,
-                                    i * rowsPerThread,
-                                    i * rowsPerThread + rowsPerThread
+                                    rowStart,
+                                    rowEnd
                                     ) );
   }
 
-  if ( extraRows > 0 )
+  //
+  // continue adding threads with the original number of rows
+  //
+  --rowsPerThread;
+  for ( ; i < numThreads; ++i )
   {
+    rowStart = i * rowsPerThread + extraRows;
+    rowEnd   = rowStart + rowsPerThread;
+
     threads_.push_back( std::thread(
                                     &GameOfLifeCpu::_propogateStateThreaded,
                                     this,
-                                    numThreads * rowsPerThread,
-                                    uHeight
+                                    rowStart,
+                                    rowEnd
                                     ) );
   }
+
+  assert( ( i - 1 ) * rowsPerThread + rowsPerThread + extraRows == uHeight );
+  assert( numThreads == threads_.size( ) );
 } // GameOfLifeCpu::_startThreadPool
 
 
