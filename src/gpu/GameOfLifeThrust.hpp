@@ -14,7 +14,7 @@ public:
 
   explicit
   GameOfLifeThrust(
-                   std::vector< bool > initState,
+                   std::vector< char > initState,
                    SizeType            width,
                    SizeType            height
                    );
@@ -23,7 +23,7 @@ public:
   void propogateState ( ) final;
 
   virtual
-  const std::vector< bool > &getState ( ) final;
+  const std::vector< char > &getState ( ) final;
 
 
 private:

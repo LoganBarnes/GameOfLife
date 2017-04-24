@@ -12,7 +12,7 @@
 branches:
   # whitelist
   only:
-    - windows
+    - master
 
 # Do not build on tags (GitHub and BitBucket)
 skip_tags: true
@@ -72,7 +72,7 @@ build_script:
   - cd c:\projects\GameOfLife
   - mkdir build
   - cd build
-  - cmake -DCMAKE_GENERATOR_PLATFORM=x64 -DBUILD_SHARED_LIBS=OFF ..
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% -DBUILD_SHARED_LIBS=OFF ..
   - cmake --build . --config %BUILD_MODE% -- /m
   - cd ..
 

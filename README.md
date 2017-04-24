@@ -1,7 +1,7 @@
 Game of Life
 ============
 
-*Requires NCurses (Unix only)
+[![Build status](https://ci.appveyor.com/api/projects/status/d2q9fdqtvvlr6wq9?svg=true)](https://ci.appveyor.com/project/LoganBarnes/gameoflife)
 
 Download
 --------

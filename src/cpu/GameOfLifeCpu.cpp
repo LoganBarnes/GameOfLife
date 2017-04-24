@@ -7,9 +7,9 @@ namespace gol
 
 
 GameOfLifeCpu::GameOfLifeCpu(
-                             std::vector< bool >            initState,
-                             std::vector< bool >::size_type width,
-                             std::vector< bool >::size_type height,
+                             std::vector< char >            initState,
+                             std::vector< char >::size_type width,
+                             std::vector< char >::size_type height,
                              const                          bool /*multiThreading*/
                              )
   : GameOfLife( initState, width, height )

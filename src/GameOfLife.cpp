@@ -9,8 +9,8 @@ namespace gol
 /// \param width
 ///
 GameOfLife::GameOfLife(
-                       std::vector< bool >            initState,
-                       std::vector< bool >::size_type width
+                       std::vector< char >            initState,
+                       std::vector< char >::size_type width
                        )
   : upImpl_( new GameOfLife::GameOfLifeImpl( initState, width ) )
 {}
@@ -30,21 +30,21 @@ GameOfLife::propogateState( ) { upImpl_->propogateState( ); }
 /// \brief GameOfLife::getState
 /// \return
 ///
-const std::vector< bool >&
+const std::vector< char >&
 GameOfLife::getState( ) { return upImpl_->getState( ); }
 
 ///
 /// \brief GameOfLife::getWidth
 /// \return
 ///
-std::vector< bool >::size_type
+std::vector< char >::size_type
 GameOfLife::getWidth( ) { return upImpl_->getWidth( ); }
 
 ///
 /// \brief GameOfLife::getHeight
 /// \return
 ///
-std::vector< bool >::size_type
+std::vector< char >::size_type
 GameOfLife::getHeight( ) { return upImpl_->getHeight( ); }
 
 
@@ -74,9 +74,9 @@ operator<<(
 void
 GameOfLife::_printState( std::ostream &os ) const
 {
-  typedef std::vector< bool >::size_type SizeType;
+  typedef std::vector< char >::size_type SizeType;
 
-  const std::vector< bool > &state = upImpl_->getState( );
+  const std::vector< char > &state = upImpl_->getState( );
 
   SizeType width  = upImpl_->getWidth( );
   SizeType height = upImpl_->getHeight( );
