@@ -33,11 +33,11 @@ clone_folder: c:\projects\GameOfLife
 # scripts that run after cloning repository
 install:
   - echo Downloading CUDA toolkit 8
-  - appveyor DownloadFile https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_win10-exe
-  - 7z x cuda.zip -ocuda
+  - mkdir cuda
   - cd cuda
-  - echo Installing CUDA toolkit 8
-  - setup.exe -s compiler_8.0 cublas_8.0 cublas_dev_8.0 cudart_8.0 curand_8.0 curand_dev_8.0
+  - appveyor DownloadFile https://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_win10-exe
+  - dir
+  - cuda_8.0.61_win10.exe -s compiler_8.0 cublas_8.0 cublas_dev_8.0 cudart_8.0 curand_8.0 curand_dev_8.0
 
   - echo Installing VS integration
   - copy _vs\*.* "c:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\BuildCustomizations"
