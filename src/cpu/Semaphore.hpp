@@ -1,6 +1,10 @@
 // Semaphore.hpp
 #pragma once
 
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+
 ///
 /// \brief The Semaphore class
 ///        Stack Overflow: C++0x has no semaphores? How to synchronize threds?
