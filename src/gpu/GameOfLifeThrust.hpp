@@ -14,16 +14,16 @@ public:
 
   explicit
   GameOfLifeThrust(
-                   std::vector< char > initState,
-                   SizeType            width,
-                   SizeType            height
+                   std::vector< GolBool > initState,
+                   SizeType               width,
+                   SizeType               height
                    );
 
   virtual
   void propogateState ( ) final;
 
   virtual
-  const std::vector< char > &getState ( ) final;
+  const std::vector< GolBool > &getState ( ) final;
 
 
 private:

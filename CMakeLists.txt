@@ -29,6 +29,9 @@ endif( )
 
 add_library (
              gol
+             ${SRC_DIR}/GameOfLife.hpp
+             ${SRC_DIR}/GameOfLifeAlgorithm.hpp
+             ${SRC_DIR}/cpu/Semaphore.hpp
              ${SRC_DIR}/cpu/GameOfLifeCpu.hpp
              ${SRC_DIR}/cpu/GameOfLifeCpu.cpp
              )

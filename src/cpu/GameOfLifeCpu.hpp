@@ -1,6 +1,8 @@
 // GameOfLifeCpu.cpp
 #include "GameOfLife.hpp"
 
+#include <thread>
+
 
 namespace gol
 {
@@ -12,19 +14,51 @@ public:
 
   explicit
   GameOfLifeCpu(
-                std::vector< char > initState,
-                SizeType            width,
-                SizeType            height,
-                const bool          multiThreading = false
+                std::vector< GolBool > initState,
+                SizeType               width,
+                SizeType               height,
+                const bool             multiThreading = false
                 );
+
+  ~GameOfLifeCpu( );
 
   virtual
   void propogateState ( ) final;
 
+  //
+  // Copying gets complicated with threads so
+  // we don't allow it
+  //
+  GameOfLifeCpu( GameOfLifeCpu& )           = delete;
+  GameOfLifeCpu&operator=( GameOfLifeCpu& ) = delete;
+
+  //
+  // Default move operators are fine since
+  // references are maintained
+  //
+  GameOfLifeCpu( GameOfLifeCpu&& )           = default;
+  GameOfLifeCpu&operator=( GameOfLifeCpu&& ) = default;
+
 
 private:
 
-  std::vector< char > prevState_;
+  void _propogateState (
+                        SizeType rowStart,
+                        SizeType rowEnd
+                        );
+
+  void _propogateStateThreaded (
+                                SizeType rowStart,
+                                SizeType rowEnd
+                                );
+
+  void _startThreadPool ( unsigned numThreads );
+  void _killThreads ( );
+
+  std::vector< GolBool > prevState_;
+  std::vector< std::thread > threads_;
+
+  bool threadsRunning_;
 
 };
 

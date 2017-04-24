@@ -17,12 +17,12 @@ namespace
 
 void
 renderState(
-            const std::vector< char >           &state,
-            const std::vector< char >::size_type width,
-            const std::vector< char >::size_type height
+            const std::vector< GolBool >           &state,
+            const std::vector< GolBool >::size_type width,
+            const std::vector< GolBool >::size_type height
             )
 {
-  typedef std::vector< char >::size_type SizeType;
+  typedef std::vector< GolBool >::size_type SizeType;
 
   SizeType index = 0;
 
@@ -79,13 +79,13 @@ GameOfLifeApp::exec(
   //
   // parse arguments
   //
-  char runFast  = false;
-  char sameSeed = false;
+  GolBool runFast     = false;
+  GolBool multithread = false;
 
-  std::vector< char >::size_type w = 10;
-  std::vector< char >::size_type h = 10;
-  double propStep                  = 0.0;
-  double renderStep                = 0.0;
+  std::vector< GolBool >::size_type w = 10;
+  std::vector< GolBool >::size_type h = 10;
+  double propStep                     = 0.0;
+  double renderStep                   = 0.0;
 
   auto seed = std::chrono::high_resolution_clock::now( ).time_since_epoch( ).count( );
 
@@ -99,7 +99,8 @@ GameOfLifeApp::exec(
   {
     std::string arg( argv[ i ] );
 
-    runFast |= ( arg == "-f" );
+    runFast     |= ( arg == "-f" );
+    multithread |= ( arg == "-mt" );
 
     if ( arg.size( ) > wStr.size( ) &&
         std::mismatch( wStr.begin( ), wStr.end( ), arg.begin( ) ).first == wStr.end( ) )
@@ -157,7 +158,7 @@ GameOfLifeApp::exec(
   std::default_random_engine gen( seed );
   std::bernoulli_distribution dist;
 
-  std::vector< char > state( w * h );
+  std::vector< GolBool > state( w *h );
 
   auto genLambda = [ &gen, &dist ]( )
                    {
@@ -170,7 +171,7 @@ GameOfLifeApp::exec(
                 genLambda
                 );
 
-  GameOfLifeCpu game( state, w, h );
+  GameOfLifeCpu game( state, w, h, multithread );
   renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
 
 
@@ -179,7 +180,7 @@ GameOfLifeApp::exec(
   decltype( propStart )propEnd, renderEnd;
   std::chrono::duration< double > seconds;
 
-  char quitLoop = false;
+  GolBool quitLoop = false;
 
   while ( !quitLoop )
   {

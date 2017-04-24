@@ -3,11 +3,17 @@
 
 #include <vector>
 
+//
+// using char for CUDA compatibility but calling
+// it a bool since that is how it's used
+//
+typedef char GolBool;
+
 
 namespace gol
 {
 
-typedef std::vector< char >::size_type SizeType;
+typedef std::vector< GolBool >::size_type SizeType;
 
 class GameOfLife
 {
@@ -16,7 +22,7 @@ public:
 
   explicit
   GameOfLife(
-             std::vector< char > initState,
+             std::vector< GolBool > initState,
              SizeType            width,
              SizeType            height
              )
@@ -36,7 +42,7 @@ public:
 
 
   virtual
-  const std::vector< char >&
+  const std::vector< GolBool >&
   getState( ) { return state_; }
 
 
@@ -46,7 +52,7 @@ public:
 
 protected:
 
-  std::vector< char > state_;
+  std::vector< GolBool > state_;
 
   SizeType width_;
   SizeType height_;
