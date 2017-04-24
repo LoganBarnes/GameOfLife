@@ -17,12 +17,12 @@ namespace
 
 void
 renderState(
-            const std::vector< bool >           &state,
-            const std::vector< bool >::size_type width,
-            const std::vector< bool >::size_type height
+            const std::vector< char >           &state,
+            const std::vector< char >::size_type width,
+            const std::vector< char >::size_type height
             )
 {
-  typedef std::vector< bool >::size_type SizeType;
+  typedef std::vector< char >::size_type SizeType;
 
   SizeType index = 0;
 
@@ -79,11 +79,11 @@ GameOfLifeApp::exec(
   //
   // parse arguments
   //
-  bool runFast  = false;
-  bool sameSeed = false;
+  char runFast  = false;
+  char sameSeed = false;
 
-  std::vector< bool >::size_type w = 10;
-  std::vector< bool >::size_type h = 10;
+  std::vector< char >::size_type w = 10;
+  std::vector< char >::size_type h = 10;
   double propStep                  = 0.0;
   double renderStep                = 0.0;
 
@@ -157,7 +157,7 @@ GameOfLifeApp::exec(
   std::default_random_engine gen( seed );
   std::bernoulli_distribution dist;
 
-  std::vector< bool > state( w * h );
+  std::vector< char > state( w * h );
 
   auto genLambda = [ &gen, &dist ]( )
                    {
@@ -179,7 +179,7 @@ GameOfLifeApp::exec(
   decltype( propStart )propEnd, renderEnd;
   std::chrono::duration< double > seconds;
 
-  bool quitLoop = false;
+  char quitLoop = false;
 
   while ( !quitLoop )
   {
