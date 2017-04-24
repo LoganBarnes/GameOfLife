@@ -97,8 +97,8 @@ GameOfLifeCpu::propogateState( )
 
 void
 GameOfLifeCpu::_propogateState(
-                               SizeType rowStart,
-                               SizeType rowEnd
+                               unsigned rowStart,
+                               unsigned rowEnd
                                )
 {
   dim3 dim(
@@ -119,8 +119,8 @@ GameOfLifeCpu::_propogateState(
 
 void
 GameOfLifeCpu::_propogateStateThreaded(
-                                       SizeType rowStart,
-                                       SizeType rowEnd
+                                       unsigned rowStart,
+                                       unsigned rowEnd
                                        )
 {
   while ( true )

@@ -43,13 +43,13 @@ public:
 private:
 
   void _propogateState (
-                        SizeType rowStart,
-                        SizeType rowEnd
+                        unsigned rowStart,
+                        unsigned rowEnd
                         );
 
   void _propogateStateThreaded (
-                                SizeType rowStart,
-                                SizeType rowEnd
+                                unsigned rowStart,
+                                unsigned rowEnd
                                 );
 
   void _startThreadPool ( unsigned numThreads );
