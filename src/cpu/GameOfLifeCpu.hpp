@@ -12,7 +12,7 @@ public:
 
   explicit
   GameOfLifeCpu(
-                std::vector< bool > initState,
+                std::vector< char > initState,
                 SizeType            width,
                 SizeType            height,
                 const bool          multiThreading = false
@@ -24,7 +24,7 @@ public:
 
 private:
 
-  std::vector< bool > prevState_;
+  std::vector< char > prevState_;
 
 };
 

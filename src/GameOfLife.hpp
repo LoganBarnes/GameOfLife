@@ -7,7 +7,7 @@
 namespace gol
 {
 
-typedef std::vector< bool >::size_type SizeType;
+typedef std::vector< char >::size_type SizeType;
 
 class GameOfLife
 {
@@ -16,7 +16,7 @@ public:
 
   explicit
   GameOfLife(
-             std::vector< bool > initState,
+             std::vector< char > initState,
              SizeType            width,
              SizeType            height
              )
@@ -36,7 +36,7 @@ public:
 
 
   virtual
-  const std::vector< bool >&
+  const std::vector< char >&
   getState( ) { return state_; }
 
 
@@ -46,7 +46,7 @@ public:
 
 protected:
 
-  std::vector< bool > state_;
+  std::vector< char > state_;
 
   SizeType width_;
   SizeType height_;

@@ -1,7 +1,9 @@
 Game of Life
 ============
 
-[![Build Status](https://travis-ci.org/LoganBarnes/GameOfLife.svg?branch=master)](https://travis-ci.org/LoganBarnes/GameOfLife)
+
+[![Build Status](https://travis-ci.org/LoganBarnes/GameOfLife.svg?branch=master)](https://travis-ci.org/LoganBarnes/GameOfLife) [![Build status](https://ci.appveyor.com/api/projects/status/d2q9fdqtvvlr6wq9?svg=true)](https://ci.appveyor.com/project/LoganBarnes/gameoflife)
+
 
 Download
 --------

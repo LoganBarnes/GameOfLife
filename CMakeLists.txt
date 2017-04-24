@@ -58,14 +58,14 @@ find_package( CUDA )
 
 if ( ${CUDA_FOUND} )
 
-  include_directories( SYSTEM ${SRC_DIR}/gpu/cuda_helpers )
+  include_directories( SYSTEM ${CUDA_INCLUDE_DIRS} ${SRC_DIR}/gpu/cuda_helpers )
   include_directories(        ${SRC_DIR}                  )
 
   ###
   ### set nvcc options
   ###
   if( UNIX OR APPLE )
-    list( APPEND PROJECT_NVCC_FLAGS -Xcompiler -fPIC )
+    list( APPEND PROJECT_NVCC_FLAGS -Xcompiler -fPIC --std=c++11 )
   endif( )
 
   if( APPLE )
@@ -82,7 +82,6 @@ if ( ${CUDA_FOUND} )
 
   list( APPEND PROJECT_NVCC_FLAGS ${CUDA_ARCH_FLAGS} )
 
-
   ###
   ### build CUDA library
   ###
@@ -92,7 +91,7 @@ if ( ${CUDA_FOUND} )
                    ${SRC_DIR}/gpu/GameOfLifeThrust.hpp
                    ${SRC_DIR}/gpu/GameOfLifeThrust.cu
 
-                   OPTIONS --std=c++11 --expt-relaxed-constexpr ${PROJECT_NVCC_FLAGS}
+                   OPTIONS --expt-relaxed-constexpr ${PROJECT_NVCC_FLAGS}
                    DEBUG -g
                    RELEASE -use_fast_math
                    )
@@ -102,6 +101,7 @@ if ( ${CUDA_FOUND} )
                         CXX_STANDARD          14
                         CXX_STANDARD_REQUIRED ON
                         )
+
 
   if ( PROJECT_CPP_FLAGS )
     set_target_properties( golCuda PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )

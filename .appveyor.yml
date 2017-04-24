@@ -1,0 +1,97 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# branches to build
+branches:
+  # whitelist
+  only:
+    - master
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+
+# Start builds on tags only (GitHub and BitBucket)
+skip_non_tags: true
+
+#---------------------------------#
+#    environment configuration    #
+#---------------------------------#
+
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+# clone directory
+clone_folder: c:\projects\GameOfLife
+
+# scripts that run after cloning repository
+install:
+  - echo Downloading CUDA toolkit 8
+  - appveyor DownloadFile https://www.dropbox.com/s/s2ohvfp4u0f34tg/cuda.zip?dl=1
+  - 7z x cuda.zip -ocuda
+  - cd cuda\cuda
+  - echo Installing CUDA toolkit 8
+  - setup.exe -s compiler_8.0 cublas_8.0 cublas_dev_8.0 cudart_8.0 curand_8.0 curand_dev_8.0
+
+  - echo Installing VS integration
+  - copy _vs\*.* "c:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\BuildCustomizations"
+
+  - cd ..\..
+
+  - set PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0\bin;%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0\libnvvp;%PATH%
+  - set CUDA_PATH=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0
+  - set CUDA_PATH_V8_0=%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v8.0
+
+  - nvcc -V
+
+environment:
+  matrix:
+    - BUILD_MODE: Debug
+    - BUILD_MODE: Release
+        # - BUILD_SHARED_LIBS: ON
+        # - BUILD_SHARED_LIBS: OFF
+matrix:
+    fast_finish: true
+
+
+#---------------------------------#
+#       build configuration       #
+#---------------------------------#
+
+# build platform, i.e. x86, x64, Any CPU. This setting is optional.
+platform: x64
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+  - cd c:\projects\GameOfLife
+  - mkdir build
+  - cd build
+  - cmake -DCMAKE_GENERATOR_PLATFORM=%PLATFORM% -DBUILD_SHARED_LIBS=OFF ..
+  - cmake --build . --config %BUILD_MODE% -- /m
+  - cd ..
+
+# to disable automatic builds
+#build: off
+
+#---------------------------------#
+#       tests configuration       #
+#---------------------------------#
+
+# to run your custom scripts instead of automatic tests
+test_script:
+  - build\%BUILD_MODE%\testGameOfLife.exe --gtest_filter=Cpu*
+
+
+#---------------------------------#
+#         notifications           #
+#---------------------------------#
+
+notifications:
+  - on_build_success: false
+  - on_build_failure: true

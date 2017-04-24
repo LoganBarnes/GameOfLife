@@ -4,6 +4,9 @@
 #include <helper_cuda.h>
 #include <helper_grid.h>
 
+// this prevents nvcc from causing warnings
+// in thirdparty headers on windows
+#pragma warning(push, 0)
 #include <cuda_runtime.h>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
@@ -11,6 +14,7 @@
 #include <thrust/for_each.h>
 #include <thrust/iterator/zip_iterator.h>
 #include <stdexcept>
+#pragma warning(pop)
 
 
 namespace gol
@@ -72,9 +76,9 @@ const CudaPrep cudaPrep;
 /// \return
 ///
 __device__
-bool
+char
 propogateState_k(
-                 const bool *pPrev,
+                 const char *pPrev,
                  const dim3  dim,
                  const uint  x,
                  const uint  y
@@ -114,7 +118,7 @@ propogateState_k(
   ix         = ( x + 1 ) % dim.x;
   neighbors += ( pPrev[ iy * dim.x + ix ] ? 1 : 0 );
 
-  bool state = pPrev[ y * dim.x + x ];
+  char state = pPrev[ y * dim.x + x ];
 
   if ( state && ( neighbors != 2 && neighbors != 3 ) )
   {
@@ -136,11 +140,11 @@ propogateState_k(
 ///
 struct PropogateFunctor
 {
-  const bool *d_prev;
+  const char *d_prev;
   const dim3 dim;
 
   PropogateFunctor(
-                   const bool *d_prev_,
+                   const char *d_prev_,
                    const dim3  dim_
                    )
     : d_prev( d_prev_ )
@@ -178,28 +182,28 @@ public:
 
   explicit
   GoLThrustImpl(
-                std::vector< bool >            initState,
-                std::vector< bool >::size_type width,
-                std::vector< bool >::size_type height
+                const std::vector< char >      &initState,
+                std::vector< char >::size_type width,
+                std::vector< char >::size_type height
                 );
 
   ~GoLThrustImpl( ) = default;
 
   void propogateState ( );
 
-  const thrust::device_vector< bool > &getState ( );
+  const thrust::device_vector< char > &getState ( );
 
-  bool updateSinceGetState ( ) const { return updateSinceGetState_; }
+  char updateSinceGetState ( ) const { return updateSinceGetState_; }
 
 
 private:
 
-  thrust::device_vector< bool > dCurrState_;
-  thrust::device_vector< bool > dPrevState_;
+  thrust::device_vector< char > dCurrState_;
+  thrust::device_vector< char > dPrevState_;
 
   std::vector< float >::size_type width_, height_;
 
-  bool updateSinceGetState_;
+  char updateSinceGetState_;
 
 };
 
@@ -211,17 +215,23 @@ private:
 /// \param width
 ///
 GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl(
-                                               std::vector< bool >
-                                               initState,
-                                               std::vector< bool >::size_type width,
-                                               std::vector< bool >::size_type height
+                                               const std::vector< char >      &initState,
+                                               std::vector< char >::size_type width,
+                                               std::vector< char >::size_type height
                                                )
-  : dCurrState_( initState )
+  : dCurrState_( initState.size( ) )
   , dPrevState_( dCurrState_.size( ) )
   , width_( width )
   , height_( height )
   , updateSinceGetState_( true )
-{}
+{
+  checkCudaErrors( cudaMemcpy(
+                              thrust::raw_pointer_cast( dCurrState_.data() ),
+                              initState.data( ),
+                              dCurrState_.size() * sizeof( char ),
+                              cudaMemcpyHostToDevice
+                              ) );
+}
 
 
 
@@ -233,7 +243,7 @@ GameOfLifeThrust::GoLThrustImpl::propogateState( )
 {
   dPrevState_.swap( dCurrState_ ); // O(1) just swaps pointers
 
-  dim3 dim( width_, height_ );
+  dim3 dim( static_cast< unsigned >( width_), static_cast< unsigned >( height_ ) );
 
   thrust::counting_iterator< uint > first( 0 );
   thrust::counting_iterator< uint > last = first + dCurrState_.size( );
@@ -253,7 +263,7 @@ GameOfLifeThrust::GoLThrustImpl::propogateState( )
 /// \brief GameOfLifeThrust::GoLThrustImpl::getState
 /// \return
 ///
-const thrust::device_vector< bool >&
+const thrust::device_vector< char >&
 GameOfLifeThrust::GoLThrustImpl::getState( )
 {
   updateSinceGetState_ = false;
@@ -268,13 +278,13 @@ GameOfLifeThrust::GoLThrustImpl::getState( )
 /// \param width
 ///
 GameOfLifeThrust::GameOfLifeThrust(
-                                   std::vector< bool >            initState,
-                                   std::vector< bool >::size_type width,
-                                   std::vector< bool >::size_type height
+                                   std::vector< char >            initState,
+                                   std::vector< char >::size_type width,
+                                   std::vector< char >::size_type height
                                    )
   : GameOfLife( initState, width, height )
   , upImpl_( new GameOfLifeThrust::GoLThrustImpl(
-                                                 initState,
+                                                 state_,
                                                  width,
                                                  height
                                                  ) )
@@ -297,10 +307,10 @@ GameOfLifeThrust::propogateState( )
 /// \brief GameOfLifeThrust::getState
 /// \return
 ///
-const std::vector< bool >&
+const std::vector< char >&
 GameOfLifeThrust::getState( )
 {
-  const thrust::device_vector< bool > &dState = upImpl_->getState( );
+  const thrust::device_vector< char > &dState = upImpl_->getState( );
 
   if ( upImpl_->updateSinceGetState( ) )
   {
