@@ -5,12 +5,13 @@
 #include <cuda_runtime.h>
 
 #include <iostream>
+#include <memory>
 
 
 namespace
 {
 
-bool cudaInitialized = false;
+unsigned long long count = 0;
 
 } // namespace
 
@@ -19,7 +20,7 @@ bool cudaInitialized = false;
 CudaManager::CudaManager( const bool print )
   : print_( print )
 {
-  if ( !cudaInitialized )
+  if ( count == 0 )
   {
     // use device with highest Gflops/s
     int devID = findCudaDevice( 0, 0, print_ );
@@ -28,14 +29,14 @@ CudaManager::CudaManager( const bool print )
     {
       throw std::runtime_error( "No CUDA capable devices found" );
     }
-    cudaInitialized = true;
   }
+  ++count;
 }
 
 
 CudaManager::~CudaManager( )
 {
-  if ( cudaInitialized )
+  if ( count == 1 )
   {
     // cudaDeviceReset causes the driver to clean up all state. While
     // not mandatory in normal operation, it is good practice.  It is also
@@ -43,12 +44,12 @@ CudaManager::~CudaManager( )
     // profiled. Calling cudaDeviceReset causes all profile data to be
     // flushed before the application exits
     cudaDeviceReset( );
-    cudaInitialized = false;
 
     if ( print_ )
     {
       std::cout << "CUDA device reset" << std::endl;
     }
   }
+  --count;
 }
 

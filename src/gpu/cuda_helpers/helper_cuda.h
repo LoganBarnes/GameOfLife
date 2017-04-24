@@ -1235,7 +1235,9 @@ inline int findCudaDevice(int argc, const char **argv, bool print)
         checkCudaErrors(cudaSetDevice(devID));
         checkCudaErrors(cudaGetDeviceProperties(&deviceProp, devID));
         if (print)
-            printf("GPU Device %d: \"%s\" with compute capability %d.%d\n\n", devID, deviceProp.name, deviceProp.major, deviceProp.minor);
+        {
+            printf("GPU Device %d: \"%s\" with compute capability %d.%d\n", devID, deviceProp.name, deviceProp.major, deviceProp.minor);
+        }
     }
 
     return devID;

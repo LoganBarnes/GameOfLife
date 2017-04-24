@@ -44,6 +44,14 @@ TEST_F( AllTimingUnitTests, UnimplementedTest )
   std::vector< GolBool > v = { true, false, false, true };
   gol::GameOfLifeThrust gol( v, 2, 2 );
   gol.propogateState( );
+  std::cout << "gol1" << std::endl;
+
+  {
+    gol::GameOfLifeThrust gol2( v, 2, 2 );
+    gol2.propogateState( );
+    std::cout << "gol2" << std::endl;
+  }
+
 }
 
 
