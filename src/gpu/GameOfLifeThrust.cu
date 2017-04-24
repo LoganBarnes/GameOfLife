@@ -3,8 +3,9 @@
 
 #include "GameOfLifeAlgorithm.hpp"
 
+#include "CudaManager.hpp"
+
 #include <helper_cuda.h>
-#include <helper_grid.h>
 
 // this prevents nvcc from causing warnings
 // in thirdparty headers on windows
@@ -22,52 +23,6 @@
 
 namespace gol
 {
-
-
-namespace
-{
-
-///
-/// \brief The CudaPrep struct
-///
-struct CudaPrep
-{
-
-  CudaPrep( )
-  {
-    // use device with highest Gflops/s
-    int devID = findCudaDevice( 0, 0, false );
-
-    if ( devID < 0 )
-    {
-      throw std::runtime_error( "No CUDA capable devices found" );
-    }
-
-    std::cout << "CUDA device initialized" << std::endl;
-  }
-
-
-  ~CudaPrep( )
-  {
-    // cudaDeviceReset causes the driver to clean up all state. While
-    // not mandatory in normal operation, it is good practice.  It is also
-    // needed to ensure correct operation when the application is being
-    // profiled. Calling cudaDeviceReset causes all profile data to be
-    // flushed before the application exits
-    cudaDeviceReset( );
-    std::cout << "CUDA device reset" << std::endl;
-  }
-
-
-};
-
-///
-/// \brief cudaPrep
-///
-const CudaPrep cudaPrep;
-
-} // namespace
-
 
 
 ///
@@ -219,6 +174,7 @@ GameOfLifeThrust::GameOfLifeThrust(
                                    std::vector< GolBool >::size_type height
                                    )
   : GameOfLife( initState, width, height )
+  , cuda_( )
   , upImpl_( new GameOfLifeThrust::GoLThrustImpl(
                                                  state_,
                                                  width,
@@ -232,7 +188,9 @@ GameOfLifeThrust::GameOfLifeThrust(
 /// \brief GameOfLifeThrust::~GameOfLifeThrust
 ///
 GameOfLifeThrust::~GameOfLifeThrust( )
-{}
+{
+
+}
 
 
 

@@ -2,6 +2,7 @@
 #include "GameOfLife.hpp"
 
 #include <memory>
+#include "gpu/CudaManager.hpp"
 
 
 namespace gol
@@ -29,6 +30,8 @@ public:
 
 
 private:
+
+  CudaManager cuda_;
 
   class GoLThrustImpl;
   std::unique_ptr< GoLThrustImpl > upImpl_;

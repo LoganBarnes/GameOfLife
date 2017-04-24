@@ -62,7 +62,7 @@ find_package( CUDA )
 if ( ${CUDA_FOUND} )
 
   include_directories( SYSTEM ${SRC_DIR}/gpu/cuda_helpers )
-  include_directories(        ${SRC_DIR}                                       )
+  include_directories(        ${SRC_DIR}                  )
 
   ###
   ### set nvcc options
@@ -91,6 +91,8 @@ if ( ${CUDA_FOUND} )
   cuda_add_library(
                    golCuda
 
+                   ${SRC_DIR}/gpu/CudaManager.hpp
+                   ${SRC_DIR}/gpu/CudaManager.cu
                    ${SRC_DIR}/gpu/GameOfLifeThrust.hpp
                    ${SRC_DIR}/gpu/GameOfLifeThrust.cu
 
