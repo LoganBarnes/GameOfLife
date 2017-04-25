@@ -2,6 +2,8 @@
 #include "GameOfLifeApp.hpp"
 #include "cpu/GameOfLifeCpu.hpp"
 
+#include "ProjectConfig.hpp"
+
 #include <ncurses.h>
 
 #include <iostream>
@@ -12,7 +14,9 @@
 #include <stdexcept>
 #include <limits>
 
+#ifndef CI_SERVER
 #define GPU
+#endif
 
 #ifdef GPU
 #include "gpu/GameOfLifeCuda.hpp"

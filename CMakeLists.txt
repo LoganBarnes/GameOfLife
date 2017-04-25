@@ -1,10 +1,17 @@
 cmake_minimum_required ( VERSION 3.7.2 )
 project ( GameOfLife )
 
-option( STRICT_FLAGS "Compile with strict error and warning flags" OFF )
+option( STRICT_FLAGS "Compile with strict error and warning flags"       OFF )
+option( CI_SERVER    "Disable certain features when running on a server" OFF )
+
 
 # project dirs
 set( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
+
+configure_file (
+                ${SRC_DIR}/ProjectConfig.hpp.in
+                ${PROJECT_BINARY_DIR}/ProjectConfig.hpp
+                )
 
 include( ${CMAKE_CURRENT_SOURCE_DIR}/cmake/DownloadProject.cmake )
 set( CMAKE_MACOSX_RPATH TRUE )
@@ -37,11 +44,8 @@ add_library (
              )
 
 target_link_libraries ( gol -lpthread -lm )
-# target_link_libraries ( gol glfw )
-# add_dependencies      ( gol glfw )
 
-# target_include_directories( gol SYSTEM PUBLIC ${glfw_SOURCE_DIR}/include )
-target_include_directories( gol        PUBLIC ${SRC_DIR}                 )
+target_include_directories( gol PUBLIC ${SRC_DIR} )
 
 set_target_properties(
                       gol PROPERTIES
@@ -157,8 +161,12 @@ if ( ${Curses_FOUND} )
   target_link_libraries ( gameOfLife gol ${CURSES_LIBRARY} )
   add_dependencies      ( gameOfLife gol                   )
 
-  target_include_directories( gameOfLife SYSTEM PUBLIC ${CURSES_INCLUDE_DIR} )
-  target_include_directories( gameOfLife        PUBLIC ${SRC_DIR}            )
+  target_include_directories(
+                             gameOfLife SYSTEM PUBLIC
+                             ${CURSES_INCLUDE_DIR}
+                             ${CMAKE_CURRENT_BINARY_DIR}
+                             )
+  target_include_directories( gameOfLife PUBLIC ${SRC_DIR} )
 
   set_target_properties(
                         gameOfLife PROPERTIES

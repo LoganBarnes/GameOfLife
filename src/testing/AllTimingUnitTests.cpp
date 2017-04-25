@@ -1,7 +1,7 @@
 // AllTimingUnitTests.cpp
 
 #include "gpu/GameOfLifeThrust.hpp"
-// #include "gpu/GameOfLifeCuda.hpp"
+#include "gpu/GameOfLifeCuda.hpp"
 #include "cpu/GameOfLifeCpu.hpp"
 
 #include "gmock/gmock.h"

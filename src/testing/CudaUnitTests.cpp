@@ -1,6 +1,6 @@
 // CudaUnitTests.cpp
 
-// #include "gpu/GameOfLifeCuda.hpp"
+#include "gpu/GameOfLifeCuda.hpp"
 
 #include "gmock/gmock.h"
 
