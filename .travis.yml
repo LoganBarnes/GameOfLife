@@ -197,8 +197,8 @@ script:
   ############################################################################
   - |
     if [ -f gameOfLife ]; then
-      time ./build/gameOfLife -w=1000 -h=600 -s=7 -i=500 -np
-      time ./build/gameOfLife -w=1000 -h=600 -s=7 -i=500 -np -mt # multithreaded
+      time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np
+      time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np -mt # multithreaded
     fi
 
   ############################################################################

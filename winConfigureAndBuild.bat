@@ -11,3 +11,4 @@ cmake -E chdir build cmake -DCMAKE_GENERATOR_PLATFORM=x64 ..
 
 rem run the cmake build command to build the project with the native build system
 cmake -E chdir build cmake --build . --config Release -- /m
+rem cmake -E chdir build cmake --build . --config Debug -- /m

@@ -2,21 +2,16 @@
 #include "GameOfLifeThrust.hpp"
 
 #include "GameOfLifeAlgorithm.hpp"
-
 #include "CudaManager.hpp"
 
 #include <helper_cuda.h>
 
-// this prevents nvcc from causing warnings
-// in thirdparty headers on windows
-// #pragma warning(push, 0)
 #include <cuda_runtime.h>
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 #include <thrust/copy.h>
 #include <thrust/for_each.h>
 #include <thrust/iterator/zip_iterator.h>
-// #pragma warning(pop)
 
 #include <stdexcept>
 
@@ -31,14 +26,14 @@ namespace gol
 struct PropogateFunctor
 {
   const GolBool *d_prev;
-  const dim3 dim;
+  const dim3     dim;
 
   PropogateFunctor(
                    const GolBool *d_prev_,
                    const dim3     dim_
                    )
     : d_prev( d_prev_ )
-    , dim( dim_ )
+    , dim   ( dim_ )
   {}
 
   ///
@@ -136,12 +131,12 @@ GameOfLifeThrust::GoLThrustImpl::propogateState( )
 
   dim3 dim( static_cast< unsigned >( width_ ), static_cast< unsigned >( height_ ) );
 
-  thrust::counting_iterator< uint > first( 0 );
-  thrust::counting_iterator< uint > last = first + dCurrState_.size( );
+  thrust::counting_iterator< SizeType > first( 0 );
+  thrust::counting_iterator< SizeType > last( dCurrState_.size( ) );
 
   thrust::for_each(
                    thrust::make_zip_iterator( thrust::make_tuple( first, dCurrState_.begin( ) ) ),
-                   thrust::make_zip_iterator( thrust::make_tuple( last, dCurrState_.end( ) ) ),
+                   thrust::make_zip_iterator( thrust::make_tuple( last,  dCurrState_.end( ) ) ),
                    PropogateFunctor( thrust::raw_pointer_cast( dPrevState_.data( ) ), dim )
                    );
 

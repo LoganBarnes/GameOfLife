@@ -13,7 +13,6 @@ namespace
 Semaphore startingSemaphore;
 Semaphore finishedSemaphore1;
 Semaphore finishedSemaphore2;
-//Semaphore finishedSemaphore;
 
 }
 
@@ -63,7 +62,7 @@ GameOfLifeCpu::propogateState( )
 
   if ( threads_.empty( ) )
   {
-    _propogateState( 0, height_ );
+    _propogateState( 0, static_cast< unsigned >( height_ ) );
   }
   else
   {
@@ -106,9 +105,9 @@ GameOfLifeCpu::_propogateState(
            static_cast< unsigned >( height_ )
            );
 
-  for ( auto y = rowStart; y < rowEnd; ++y )
+  for ( unsigned y = rowStart; y < rowEnd; ++y )
   {
-    for ( auto x = 0; x < dim.x; ++x )
+    for ( unsigned x = 0; x < dim.x; ++x )
     {
       state_[ y * dim.x + x ] = findNeighbors( prevState_.data( ), dim, x, y );
     }
@@ -162,15 +161,16 @@ GameOfLifeCpu::_startThreadPool( unsigned numThreads )
   //
   // determine the number of rows each thread should process
   //
-  auto rowsPerThread = height_ / numThreads;
-  numThreads = height_ / rowsPerThread;
+  unsigned uHeight = static_cast< unsigned >( height_ );
+  auto rowsPerThread = uHeight / numThreads;
+  numThreads = uHeight / rowsPerThread;
 
-  auto extraRows = height_ - numThreads * rowsPerThread;
+  auto extraRows = uHeight - numThreads * rowsPerThread;
 
   std::cout << "New: " << numThreads << std::endl;
   std::cout << "Extra: " << extraRows << std::endl;
 
-  for ( auto i = 0; i < numThreads; ++i )
+  for ( unsigned i = 0; i < numThreads; ++i )
   {
     threads_.push_back( std::thread(
                                     &GameOfLifeCpu::_propogateStateThreaded,
@@ -186,7 +186,7 @@ GameOfLifeCpu::_startThreadPool( unsigned numThreads )
                                     &GameOfLifeCpu::_propogateStateThreaded,
                                     this,
                                     numThreads * rowsPerThread,
-                                    height_
+                                    uHeight
                                     ) );
   }
 } // GameOfLifeCpu::_startThreadPool
