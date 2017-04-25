@@ -59,7 +59,7 @@ GameOfLifeCpu::~GameOfLifeCpu( )
 void
 GameOfLifeCpu::propogateState( )
 {
-  prevState_ = state_;
+  prevState_.swap( state_ );
 
   if ( threads_.empty( ) )
   {

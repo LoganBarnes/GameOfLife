@@ -12,6 +12,12 @@
 #include <stdexcept>
 #include <limits>
 
+// #define GPU
+
+#ifdef GPU
+// #include "gpu/GameOfLifeCuda.hpp"
+#include "gpu/GameOfLifeThrust.hpp"
+#endif
 
 
 namespace
@@ -19,38 +25,36 @@ namespace
 
 void
 renderState(
-            const std::vector< GolBool >           &state,
-            const std::vector< GolBool >::size_type width,
-            const std::vector< GolBool >::size_type height
+            const std::vector< GolBool > &state,
+            const gol::SizeType          width,
+            const gol::SizeType          height
             )
 {
-  typedef std::vector< GolBool >::size_type SizeType;
+  gol::SizeType index = 0;
 
-  SizeType index = 0;
-
-  for ( SizeType c = 0; c < width + 1; ++c )
+  for ( gol::SizeType c = 0; c < width + 1; ++c )
   {
-    mvaddstr( 0, c * 2, "==" );
+      mvaddstr( 0, c * 2, "==" );
   }
 
-  for ( SizeType r = 1; r <= height; ++r )
+  for ( gol::SizeType r = 1; r <= height; ++r )
   {
-    mvaddstr( r, 0, "|" );
+      mvaddstr( r, 0, "|" );
 
-    for ( SizeType c = 0; c < width; ++c )
+    for ( gol::SizeType c = 0; c < width; ++c )
     {
-      mvaddstr( r, c * 2 + 1, state[ index++ ] ? "()" : "  " );
+      mvaddstr( r, c * 2 + 1,     state[ index++ ] ? "()" : "  " );
     }
 
-    mvaddstr( r, width * 2 + 1, "|" );
+      mvaddstr( r, width * 2 + 1, "|" );
   }
 
-  for ( SizeType c = 0; c < width + 1; ++c )
+  for ( gol::SizeType c = 0; c < width + 1; ++c )
   {
-    mvaddstr( height + 1, c * 2, "==" );
+      mvaddstr( height + 1, c * 2, "==" );
   }
 
-  mvaddstr( 0, 0, "press 'q' to quit" );
+      mvaddstr(      0,     0,     "press 'q' to quit" );
   //
   // save all changes to screen
   //
@@ -65,7 +69,6 @@ renderState(
 
 namespace gol
 {
-
 
 ///
 /// \brief GameOfLifeApp::exec
@@ -84,6 +87,8 @@ GameOfLifeApp::exec(
   bool runFast     = false;
   bool multithread = false;
   bool noPrint     = false;
+  bool cuda        = false;
+  bool thrust      = false;
 
   std::vector< GolBool >::size_type w = 10;
   std::vector< GolBool >::size_type h = 10;
@@ -104,9 +109,11 @@ GameOfLifeApp::exec(
   {
     std::string arg( argv[ i ] );
 
-    runFast     |= ( arg == "-f" );
-    multithread |= ( arg == "-mt" );
+    runFast     |= ( arg == "-f"  );
     noPrint     |= ( arg == "-np" );
+    multithread |= ( arg == "--threads" );
+    // cuda        |= ( arg == "--cuda"   );
+    thrust      |= ( arg == "--thrust" );
 
     if ( arg.size( ) > wStr.size( ) &&
         std::mismatch( wStr.begin( ), wStr.end( ), arg.begin( ) ).first == wStr.end( ) )
@@ -170,12 +177,12 @@ GameOfLifeApp::exec(
   std::default_random_engine gen( seed );
   std::bernoulli_distribution dist;
 
-  std::vector< GolBool > state( w *h );
+  std::vector< GolBool > state( w * h );
 
   auto genLambda = [ &gen, &dist ]( )
-                   {
-                     return dist( gen );
-                   };
+  {
+    return dist( gen );
+  };
 
   std::generate(
                 std::begin( state ),
@@ -183,20 +190,36 @@ GameOfLifeApp::exec(
                 genLambda
                 );
 
-  GameOfLifeCpu game( state, w, h, multithread );
+  std::unique_ptr< GameOfLife > upGame( new GameOfLifeCpu( state, w, h, multithread ) );
+
+#ifdef GPU
+
+  // if ( cuda )
+  // {
+  //   upGame =
+  //     std::unique_ptr< GameOfLifeCuda >( new GameOfLifeCuda( state, w, h ) );
+  // }
+
+  if ( thrust )
+  {
+    upGame =
+      std::unique_ptr< GameOfLifeThrust >( new GameOfLifeThrust( state, w, h ) );
+  }
+
+#endif
 
   if ( !noPrint )
   {
-    renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+    renderState( upGame->getState( ), upGame->getWidth( ), upGame->getHeight( ) );
   }
 
 
   auto propStart   = std::chrono::steady_clock::now( );
   auto renderStart = propStart;
-  decltype( propStart )propEnd, renderEnd;
+  decltype(     propStart ) propEnd, renderEnd;
   std::chrono::duration< double > seconds;
 
-  decltype( maxIterations )iteration = 0;
+  decltype( maxIterations ) iteration = 0;
   GolBool quitLoop = false;
 
   while ( !quitLoop )
@@ -206,8 +229,9 @@ GameOfLifeApp::exec(
 
     if ( seconds.count( ) > propStep )
     {
-      game.propogateState( );
+      upGame->propogateState( );
       propStart = propEnd;
+      ++iteration;
     }
 
     seconds = renderEnd - renderStart;
@@ -216,7 +240,7 @@ GameOfLifeApp::exec(
     {
       if ( !noPrint )
       {
-        renderState( game.getState( ), game.getWidth( ), game.getHeight( ) );
+        renderState( upGame->getState( ), upGame->getWidth( ), upGame->getHeight( ) );
       }
 
       renderStart = renderEnd;
@@ -239,7 +263,7 @@ GameOfLifeApp::exec(
 
     if (
         maxIterations < std::numeric_limits< decltype( maxIterations ) >::max( )
-        && ++iteration > maxIterations
+        && iteration > maxIterations
         )
     {
       quitLoop = true;

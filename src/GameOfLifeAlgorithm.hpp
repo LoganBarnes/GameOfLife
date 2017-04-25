@@ -44,6 +44,7 @@ namespace gol
 /// \return
 ///
 CUDA_DEVICE
+static
 GolBool
 findNeighbors(
               const GolBool *pPrev,
