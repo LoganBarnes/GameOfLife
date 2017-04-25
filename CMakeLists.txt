@@ -36,6 +36,7 @@ add_library (
              ${SRC_DIR}/cpu/GameOfLifeCpu.cpp
              )
 
+target_link_libraries ( gol -lpthread -lm )
 # target_link_libraries ( gol glfw )
 # add_dependencies      ( gol glfw )
 
@@ -93,6 +94,8 @@ if ( ${CUDA_FOUND} )
 
                    ${SRC_DIR}/gpu/CudaManager.hpp
                    ${SRC_DIR}/gpu/CudaManager.cu
+                   ${SRC_DIR}/gpu/GameOfLifeCuda.hpp
+                   ${SRC_DIR}/gpu/GameOfLifeCuda.cu
                    ${SRC_DIR}/gpu/GameOfLifeThrust.hpp
                    ${SRC_DIR}/gpu/GameOfLifeThrust.cu
 

@@ -12,10 +12,10 @@
 #include <stdexcept>
 #include <limits>
 
-// #define GPU
+#define GPU
 
 #ifdef GPU
-// #include "gpu/GameOfLifeCuda.hpp"
+#include "gpu/GameOfLifeCuda.hpp"
 #include "gpu/GameOfLifeThrust.hpp"
 #endif
 
@@ -112,7 +112,7 @@ GameOfLifeApp::exec(
     runFast     |= ( arg == "-f"  );
     noPrint     |= ( arg == "-np" );
     multithread |= ( arg == "--threads" );
-    // cuda        |= ( arg == "--cuda"   );
+    cuda        |= ( arg == "--cuda"   );
     thrust      |= ( arg == "--thrust" );
 
     if ( arg.size( ) > wStr.size( ) &&
@@ -194,11 +194,11 @@ GameOfLifeApp::exec(
 
 #ifdef GPU
 
-  // if ( cuda )
-  // {
-  //   upGame =
-  //     std::unique_ptr< GameOfLifeCuda >( new GameOfLifeCuda( state, w, h ) );
-  // }
+  if ( cuda )
+  {
+    upGame =
+      std::unique_ptr< GameOfLifeCuda >( new GameOfLifeCuda( state, w, h ) );
+  }
 
   if ( thrust )
   {
