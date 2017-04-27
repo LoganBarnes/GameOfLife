@@ -78,7 +78,7 @@ public:
 
   const thrust::device_vector< GolBool > &getState ( );
 
-  GolBool
+  bool
   updateSinceGetState( ) const { return updateSinceGetState_; }
 
 

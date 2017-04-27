@@ -26,7 +26,7 @@ constexpr std::vector< GolBool >::size_type heightBig = 3000;
 constexpr std::vector< GolBool >::size_type widthMassive  = 10000;
 constexpr std::vector< GolBool >::size_type heightMassive = 7500;
 
-const unsigned long long seed =
+const auto seed =
   std::chrono::high_resolution_clock::now( ).time_since_epoch( ).count( );
 
 std::vector< GolBool > initStateSmall ( widthSmall *heightSmall );
@@ -35,8 +35,7 @@ std::vector< GolBool > initStateMassive ( widthMassive *heightMassive );
 
 bool initialized = false;
 
-const CudaManager cuda;
-
+std::unique_ptr< CudaManager > upCuda;
 
 ///
 /// \brief The AllTimingUnitTests class
@@ -53,7 +52,9 @@ protected:
   {
     if ( !initialized )
     {
-      std::default_random_engine gen( seed );
+      upCuda = std::unique_ptr< CudaManager >( new CudaManager );
+
+      std::default_random_engine gen( static_cast< unsigned > ( seed ) );
       std::bernoulli_distribution dist;
 
       auto genFunction = [ &gen, &dist ]( )

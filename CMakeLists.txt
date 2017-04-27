@@ -43,7 +43,9 @@ add_library (
              ${SRC_DIR}/cpu/GameOfLifeCpu.cpp
              )
 
-target_link_libraries ( gol -lpthread -lm )
+if ( NOT MSVC )
+  target_link_libraries ( gol -lpthread -lm )
+endif( )
 
 target_include_directories( gol PUBLIC ${SRC_DIR} )
 
