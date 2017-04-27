@@ -1,0 +1,10 @@
+// ProjectConfig.hpp
+// Configured options and settings specified through CMakeLists.txt
+#pragma once
+
+namespace
+{
+
+#cmakedefine CI_SERVER
+
+} // namespace

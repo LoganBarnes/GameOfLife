@@ -12,10 +12,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 // These are CUDA Helper functions for initialization and error checking
 
+#pragma once
+
 #ifndef HELPER_CUDA_H
 #define HELPER_CUDA_H
-
-#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -210,7 +210,9 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorProfilerAlreadyStopped:
             return "cudaErrorProfilerAlreadyStopped";
 
-        /* Since CUDA 4.0*/
+        // Since CUDA 4.0
+#if __CUDACC_VER_MAJOR__ >= 4
+
         case cudaErrorAssert:
             return "cudaErrorAssert";
 
@@ -223,7 +225,11 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorHostMemoryNotRegistered:
             return "cudaErrorHostMemoryNotRegistered";
 
-        /* Since CUDA 5.0 */
+#endif // CUDA 4.0
+
+        // Since CUDA 5.0
+#if __CUDACC_VER_MAJOR__ >= 5
+
         case cudaErrorOperatingSystem:
             return "cudaErrorOperatingSystem";
 
@@ -251,7 +257,12 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorNotSupported:
             return "cudaErrorNotSupported";
 
-        /* Since CUDA 6.0 */
+#endif // CUDA 5.0
+
+        // Since CUDA 6.0
+#if __CUDACC_VER_MAJOR__ >= 6
+#if __CUDACC_VER_MINOR__ < 5
+
         case cudaErrorHardwareStackError:
             return "cudaErrorHardwareStackError";
 
@@ -270,7 +281,9 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorIllegalAddress:
             return "cudaErrorIllegalAddress";
 
-        /* Since CUDA 6.5*/
+#endif // CUDA 6.0
+
+        // Since CUDA 6.5
         case cudaErrorInvalidPtx:
             return "cudaErrorInvalidPtx";
 
@@ -283,9 +296,15 @@ static const char *_cudaGetErrorEnum(cudaError_t error)
         case cudaErrorApiFailureBase:
             return "cudaErrorApiFailureBase";
 
-        /* Since CUDA 8.0*/
-//        case cudaErrorNvlinkUncorrectable :
-//            return "cudaErrorNvlinkUncorrectable";
+#endif // CUDA 6.5
+
+        // Since CUDA 8.0
+#if __CUDACC_VER_MAJOR__ >= 8
+
+       case cudaErrorNvlinkUncorrectable :
+           return "cudaErrorNvlinkUncorrectable";
+
+#endif // CUDA 8.0
 
     }
 

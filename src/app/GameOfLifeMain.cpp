@@ -24,6 +24,5 @@ main(
     return EXIT_FAILURE;
   }
 
-  std::cout << "Exiting..." << std::endl;
   return EXIT_SUCCESS;
 } // main

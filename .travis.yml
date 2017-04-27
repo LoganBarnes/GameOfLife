@@ -33,6 +33,11 @@ addons_shortcuts:
       sources: [ 'ubuntu-toolchain-r-test' ]
       packages: [ 'gcc-6', 'g++-6', 'doxygen' ]
 
+cache:
+  directories:
+    - /usr/local/cuda-7.5
+    - /usr/local/cuda-8.0
+
 matrix:
   include:
     - os: osx
@@ -46,19 +51,19 @@ matrix:
       compiler: clang
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=7.5-18
+      env: LLVM=3.8 CUDA=7.5-18
       addons: *clang38
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=3.8 CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1
+      env: LLVM=3.8 CUDA=8.0.44-1
       addons: *clang38
     - os: linux
       compiler: "clang-3.9"
-      env: LLVM=3.9 CXXFLAGS=-stdlib=libc++
+      env: LLVM=3.9
       addons: *clang39
     - os: linux
       compiler: "clang-4.0"
-      env: LLVM=4.0 CXXFLAGS=-stdlib=libc++
+      env: LLVM=4.0
       addons: *clang40
     - os: linux
       compiler: "g++-4.9"
@@ -92,7 +97,7 @@ matrix:
       env: SHARED=ON
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON
+      env: LLVM=default CUDA=8.0.44-1 SHARED=ON
       addons: *clang38
 
     # DEBUG
@@ -102,7 +107,7 @@ matrix:
       env: BUILD_TYPE=Debug
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 BUILD_TYPE=Debug
+      env: LLVM=default CUDA=8.0.44-1 BUILD_TYPE=Debug
       addons: *clang38
 
     # DEBUG SHARED LIBS
@@ -112,7 +117,7 @@ matrix:
       env: SHARED=ON BUILD_TYPE=Debug
     - os: linux
       compiler: "clang-3.8"
-      env: LLVM=default CXXFLAGS=-stdlib=libc++ CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
+      env: LLVM=default CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
       addons: *clang38
 
 
@@ -134,6 +139,7 @@ before_install:
   - |
     if [[ "${LLVM}" != "" ]]; then
       export CXX=clang++-${LLVM}
+      export CXXFLAGS=-stdlib=libc++
     fi
   - |
     if [[ "${GCC}" != "" ]]; then
@@ -189,16 +195,21 @@ script:
   ############################################################################
   - mkdir build
   - cd build
-  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DSTRICT_FLAGS=ON ..
+  - cmake -DCI_SERVER=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=$SHARED -DSTRICT_FLAGS=ON ..
   - cmake --build . -- -j12
 
   ############################################################################
   # Run program if ncurses was found and the executable was created
   ############################################################################
-  - |
+  - | #  default run with single iteration and output to terminal
+    if [ -f gameOfLife ]; then
+      ./gameOfLife -i=1
+      ./gameOfLife -i=1 --threads # multithreaded
+    fi
+  - | # large run with multiple iterations and no output
     if [ -f gameOfLife ]; then
       time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np
-      time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np -mt # multithreaded
+      time ./gameOfLife -w=1000 -h=600 -s=7 -i=500 -np --threads # multithreaded
     fi
 
   ############################################################################

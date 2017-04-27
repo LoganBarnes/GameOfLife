@@ -26,7 +26,7 @@ namespace gol
 struct PropogateFunctor
 {
   const GolBool *d_prev;
-  const dim3     dim;
+  const dim3 dim;
 
   PropogateFunctor(
                    const GolBool *d_prev_,
@@ -67,7 +67,7 @@ public:
 
   explicit
   GoLThrustImpl(
-                const std::vector< GolBool >     &initState,
+                const std::vector< GolBool >      &initState,
                 std::vector< GolBool >::size_type width,
                 std::vector< GolBool >::size_type height
                 );
@@ -89,7 +89,7 @@ private:
 
   std::vector< float >::size_type width_, height_;
 
-  GolBool updateSinceGetState_;
+  bool updateSinceGetState_;
 
 };
 
@@ -101,7 +101,7 @@ private:
 /// \param width
 ///
 GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl(
-                                               const std::vector< GolBool >     &initState,
+                                               const std::vector< GolBool >      &initState,
                                                std::vector< GolBool >::size_type width,
                                                std::vector< GolBool >::size_type height
                                                )
@@ -141,7 +141,7 @@ GameOfLifeThrust::GoLThrustImpl::propogateState( )
                    );
 
   updateSinceGetState_ = true;
-}
+} // propogateState
 
 
 
@@ -183,9 +183,7 @@ GameOfLifeThrust::GameOfLifeThrust(
 /// \brief GameOfLifeThrust::~GameOfLifeThrust
 ///
 GameOfLifeThrust::~GameOfLifeThrust( )
-{
-
-}
+{}
 
 
 
@@ -207,9 +205,11 @@ GameOfLifeThrust::propogateState( )
 const std::vector< GolBool >&
 GameOfLifeThrust::getState( )
 {
+  const bool updateSinceGetState = upImpl_->updateSinceGetState( );
+
   const thrust::device_vector< GolBool > &dState = upImpl_->getState( );
 
-  if ( upImpl_->updateSinceGetState( ) )
+  if ( updateSinceGetState )
   {
     cudaDeviceSynchronize( );
     thrust::copy( dState.begin( ), dState.end( ), state_.begin( ) );
