@@ -53,108 +53,25 @@ struct PropogateFunctor
     thrust::get< 1 >( t ) = findNeighbors( d_prev, dim, x, y );
   }
 
-
 };
 
 
 
 ///
-/// \brief The GameOfLifeThrust::GoLThrustImpl class
+/// \brief The GameOfLifeThrust::MemberVars struct
 ///
-class GameOfLifeThrust::GoLThrustImpl
+class GameOfLifeThrust::MemberVars
 {
-public:
+  thrust::device_vector< GolBool > dCurrState;
+  thrust::device_vector< GolBool > dPrevState;
 
-  explicit
-  GoLThrustImpl(
-                const std::vector< GolBool >      &initState,
-                std::vector< GolBool >::size_type width,
-                std::vector< GolBool >::size_type height
-                );
+  bool updateSinceGetState;
 
-  ~GoLThrustImpl( ) = default;
-
-  void propogateState ( );
-
-  const thrust::device_vector< GolBool > &getState ( );
-
-  bool
-  updateSinceGetState( ) const { return updateSinceGetState_; }
-
-
-private:
-
-  thrust::device_vector< GolBool > dCurrState_;
-  thrust::device_vector< GolBool > dPrevState_;
-
-  std::vector< float >::size_type width_, height_;
-
-  bool updateSinceGetState_;
-
+  MemberVars( const std::vector< GolBool >::size_type initSize )
+    : dCurrState( initSize )
+    , dPrevState( initSize )
+    , updateSinceGetState( true )
 };
-
-
-
-///
-/// \brief GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl
-/// \param initState
-/// \param width
-///
-GameOfLifeThrust::GoLThrustImpl::GoLThrustImpl(
-                                               const std::vector< GolBool >      &initState,
-                                               std::vector< GolBool >::size_type width,
-                                               std::vector< GolBool >::size_type height
-                                               )
-  : dCurrState_( initState.size( ) )
-  , dPrevState_( dCurrState_.size( ) )
-  , width_( width )
-  , height_( height )
-  , updateSinceGetState_( true )
-{
-  checkCudaErrors( cudaMemcpy(
-                              thrust::raw_pointer_cast( dCurrState_.data( ) ),
-                              initState.data( ),
-                              dCurrState_.size( ) * sizeof( GolBool ),
-                              cudaMemcpyHostToDevice
-                              ) );
-}
-
-
-
-///
-/// \brief GameOfLifeThrust::GoLThrustImpl::propogateState
-///
-void
-GameOfLifeThrust::GoLThrustImpl::propogateState( )
-{
-  dPrevState_.swap( dCurrState_ ); // O(1) just swaps pointers
-
-  dim3 dim( static_cast< unsigned >( width_ ), static_cast< unsigned >( height_ ) );
-
-  thrust::counting_iterator< SizeType > first( 0 );
-  thrust::counting_iterator< SizeType > last( dCurrState_.size( ) );
-
-  thrust::for_each(
-                   thrust::make_zip_iterator( thrust::make_tuple( first, dCurrState_.begin( ) ) ),
-                   thrust::make_zip_iterator( thrust::make_tuple( last,  dCurrState_.end( ) ) ),
-                   PropogateFunctor( thrust::raw_pointer_cast( dPrevState_.data( ) ), dim )
-                   );
-
-  updateSinceGetState_ = true;
-} // propogateState
-
-
-
-///
-/// \brief GameOfLifeThrust::GoLThrustImpl::getState
-/// \return
-///
-const thrust::device_vector< GolBool >&
-GameOfLifeThrust::GoLThrustImpl::getState( )
-{
-  updateSinceGetState_ = false;
-  return dCurrState_;
-}
 
 
 
@@ -170,12 +87,15 @@ GameOfLifeThrust::GameOfLifeThrust(
                                    )
   : GameOfLife( initState, width, height )
   , cuda_( )
-  , upImpl_( new GameOfLifeThrust::GoLThrustImpl(
-                                                 state_,
-                                                 width,
-                                                 height
-                                                 ) )
-{}
+  , m_( new MemberVars( state_.size() ) )
+{
+  checkCudaErrors( cudaMemcpy(
+                              thrust::raw_pointer_cast( m_->dCurrState.data( ) ),
+                              initState.data( ),
+                              m_->dCurrState.size( ) * sizeof( GolBool ),
+                              cudaMemcpyHostToDevice
+                              ) );
+}
 
 
 
@@ -187,14 +107,29 @@ GameOfLifeThrust::~GameOfLifeThrust( )
 
 
 
+
 ///
 /// \brief GameOfLifeThrust::propogateState
 ///
 void
 GameOfLifeThrust::propogateState( )
 {
-  upImpl_->propogateState( );
-}
+  m_->dPrevState.swap( m_->dCurrState ); // O(1) just swaps pointers
+
+  dim3 dim( static_cast< unsigned >( width_ ), static_cast< unsigned >( height_ ) );
+
+  thrust::counting_iterator< SizeType > first( 0 );
+  thrust::counting_iterator< SizeType > last( m_->dCurrState.size( ) );
+
+  thrust::for_each(
+                   thrust::make_zip_iterator( thrust::make_tuple( first, m_->dCurrState.begin( ) ) ),
+                   thrust::make_zip_iterator( thrust::make_tuple( last,  m_->dCurrState.end( ) ) ),
+                   PropogateFunctor( thrust::raw_pointer_cast( m_->dPrevState.data( ) ), dim )
+                   );
+
+  m_->updateSinceGetState = true;
+} // propogateState
+
 
 
 
@@ -205,14 +140,11 @@ GameOfLifeThrust::propogateState( )
 const std::vector< GolBool >&
 GameOfLifeThrust::getState( )
 {
-  const bool updateSinceGetState = upImpl_->updateSinceGetState( );
-
-  const thrust::device_vector< GolBool > &dState = upImpl_->getState( );
-
-  if ( updateSinceGetState )
+  if ( m_->updateSinceGetState )
   {
+    m_->updateSinceGetState = false;
     cudaDeviceSynchronize( );
-    thrust::copy( dState.begin( ), dState.end( ), state_.begin( ) );
+    thrust::copy( m_->dCurrState.begin( ), m_->dCurrState.end( ), state_.begin( ) );
   }
 
   return state_;

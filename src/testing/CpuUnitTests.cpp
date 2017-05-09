@@ -1,8 +1,7 @@
 // CpuUnitTests.cpp
-
 #include "cpu/GameOfLifeCpu.hpp"
-
 #include "gmock/gmock.h"
+#include <vector>
 
 
 namespace
@@ -35,10 +34,21 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief UnimplementedTest
+/// \brief TestSimpleSquareState
 /////////////////////////////////////////////////////////////////
-TEST_F( CpuUnitTests, UnimplementedTest )
-{}
+TEST_F( CpuUnitTests, TestSimpleSquareState )
+{
+  std::vector< char > initState = 
+  {
+    false, false, false, true,
+    false, true,  true,  false,
+    false, false, true,  false,
+    false, true,  false, false,
+  };
+
+  gol::GameOfLifeCpu game( initState, 4, 4 );
+  game.propogateState( );
+}
 
 
 

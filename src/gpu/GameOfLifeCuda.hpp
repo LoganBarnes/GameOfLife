@@ -8,7 +8,6 @@
 namespace gol
 {
 
-
 class GameOfLifeCuda : public GameOfLife
 {
 public:
@@ -33,8 +32,8 @@ private:
 
   CudaManager cuda_;
 
-  class GoLCudaImpl;
-  std::unique_ptr< GoLCudaImpl > upImpl_;
+  struct MemberVars;
+  std::shared_ptr< MemberVars > m_;
 
 };
 

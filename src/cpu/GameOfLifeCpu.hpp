@@ -55,10 +55,8 @@ private:
   void _startThreadPool ( unsigned numThreads );
   void _killThreads ( );
 
-  std::vector< GolBool >     prevState_;
-  std::vector< std::thread > threads_;
-
-  bool threadsRunning_;
+  struct MemberVars;
+  std::shared_ptr< MemberVars > m_;
 
 };
 

@@ -33,8 +33,10 @@ private:
 
   CudaManager cuda_;
 
-  class GoLThrustImpl;
-  std::unique_ptr< GoLThrustImpl > upImpl_;
+  // This allows us to keep all cuda related 
+  // syntax and headers in the source files
+  struct MemberVars;
+  std::shared_ptr< MemberVars > m_;
 
 };
 

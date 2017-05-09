@@ -38,119 +38,19 @@ propogateKernel(
 }
 
 
-
-///
-/// \brief The GameOfLifeCuda::GoLCudaImpl class
-///
-class GameOfLifeCuda::GoLCudaImpl
+struct GameOfLifeCuda::MemberVars
 {
-public:
+  GolBool *dpCurrState;
+  GolBool *dpPrevState;
 
-  explicit
-  GoLCudaImpl(
-              const std::vector< GolBool >      &initState,
-              std::vector< GolBool >::size_type width,
-              std::vector< GolBool >::size_type height
-              );
+  bool updateSinceGetState;
 
-  ~GoLCudaImpl( );
-
-  void propogateState ( );
-
-  const GolBool *getState ( );
-
-  bool
-  updateSinceGetState( ) const { return updateSinceGetState_; }
-
-
-private:
-
-  GolBool *dpCurrState_;
-  GolBool *dpPrevState_;
-
-  std::vector< float >::size_type width_, height_;
-
-  bool updateSinceGetState_;
-
+  MemberVars()
+    : dpCurrState( nullptr )
+    , dpPrevState( nullptr )
+    , updateSinceGetState( true )
+  {}
 };
-
-
-
-///
-/// \brief GameOfLifeCuda::GoLCudaImpl::GoLCudaImpl
-/// \param initState
-/// \param width
-///
-GameOfLifeCuda::GoLCudaImpl::GoLCudaImpl(
-                                         const std::vector< GolBool >      &initState,
-                                         std::vector< GolBool >::size_type width,
-                                         std::vector< GolBool >::size_type height
-                                         )
-  : dpCurrState_( nullptr )
-  , dpPrevState_( nullptr )
-  , width_( width )
-  , height_( height )
-  , updateSinceGetState_( true )
-{
-  auto sizeBytes = initState.size( ) * sizeof( GolBool );
-
-  checkCudaErrors( cudaMalloc( &dpCurrState_, sizeBytes ) );
-  checkCudaErrors( cudaMalloc( &dpPrevState_, sizeBytes ) );
-
-  checkCudaErrors( cudaMemcpy(
-                              dpCurrState_,
-                              initState.data( ),
-                              sizeBytes,
-                              cudaMemcpyHostToDevice
-                              ) );
-}
-
-
-
-GameOfLifeCuda::GoLCudaImpl::~GoLCudaImpl( )
-{
-  checkCudaErrors( cudaFree( dpCurrState_ ) );
-  checkCudaErrors( cudaFree( dpPrevState_ ) );
-}
-
-
-
-///
-/// \brief GameOfLifeCuda::GoLCudaImpl::propogateState
-///
-void
-GameOfLifeCuda::GoLCudaImpl::propogateState( )
-{
-  std::swap( dpPrevState_, dpCurrState_ );
-
-  dim3 dim(
-           static_cast< unsigned >( width_ ),
-           static_cast< unsigned >( height_ )
-           );
-  dim.z = dim.x * dim.y;
-
-  dim3 threads( 128 ); // potentially overwritten by computeGridSize
-  dim3 blocks( 1 );    // potentially overwritten by computeGridSize
-
-  computeGridSize( dim.z, threads.x, blocks.x, threads.x );
-
-  propogateKernel << < blocks, threads >> > ( dpPrevState_, dpCurrState_, dim );
-
-  updateSinceGetState_ = true;
-} // propogateState
-
-
-
-///
-/// \brief GameOfLifeCuda::GoLCudaImpl::getState
-/// \return
-///
-const GolBool*
-GameOfLifeCuda::GoLCudaImpl::getState( )
-{
-  updateSinceGetState_ = false;
-  return dpCurrState_;
-}
 
 
 
@@ -166,20 +66,29 @@ GameOfLifeCuda::GameOfLifeCuda(
                                )
   : GameOfLife( initState, width, height )
   , cuda_( )
-  , upImpl_( new GameOfLifeCuda::GoLCudaImpl(
-                                             state_,
-                                             width,
-                                             height
-                                             ) )
-{}
+  , m_( new MemberVars )
+{
+  auto sizeBytes = initState.size( ) * sizeof( GolBool );
+
+  checkCudaErrors( cudaMalloc( &m_->dpCurrState, sizeBytes ) );
+  checkCudaErrors( cudaMalloc( &m_->dpPrevState, sizeBytes ) );
+
+  checkCudaErrors( cudaMemcpy(
+                              m_->dpCurrState,
+                              initState.data( ),
+                              sizeBytes,
+                              cudaMemcpyHostToDevice
+                              ) );
+}
 
 
 
-///
-/// \brief GameOfLifeCuda::~GameOfLifeCuda
-///
+
 GameOfLifeCuda::~GameOfLifeCuda( )
-{}
+{
+  checkCudaErrors( cudaFree( m_->dpCurrState ) );
+  checkCudaErrors( cudaFree( m_->dpPrevState ) );
+}
 
 
 
@@ -189,8 +98,24 @@ GameOfLifeCuda::~GameOfLifeCuda( )
 void
 GameOfLifeCuda::propogateState( )
 {
-  upImpl_->propogateState( );
-}
+  std::swap( m_->dpPrevState, m_->dpCurrState );
+
+  dim3 dim(
+           static_cast< unsigned >( width_ ),
+           static_cast< unsigned >( height_ )
+           );
+  dim.z = dim.x * dim.y;
+
+  dim3 threads( 128 ); // potentially overwritten by computeGridSize
+  dim3 blocks( 1 );    // potentially overwritten by computeGridSize
+
+  computeGridSize( dim.z, threads.x, blocks.x, threads.x );
+
+  propogateKernel << < blocks, threads >> > ( m_->dpPrevState, m_->dpCurrState, dim );
+
+  m_->updateSinceGetState = true;
+} // propogateState
+
 
 
 
@@ -201,16 +126,13 @@ GameOfLifeCuda::propogateState( )
 const std::vector< GolBool >&
 GameOfLifeCuda::getState( )
 {
-  const bool updateSinceGetState = upImpl_->updateSinceGetState( );
-
-  const GolBool *dpState = upImpl_->getState( );
-
-  if ( updateSinceGetState )
+  if ( m_->updateSinceGetState )
   {
+    m_->updateSinceGetState = false;
     cudaDeviceSynchronize( );
     checkCudaErrors( cudaMemcpy(
                                 state_.data( ),
-                                dpState,
+                                m_->dpCurrState,
                                 state_.size( ) * sizeof( GolBool ),
                                 cudaMemcpyDeviceToHost
                                 ) );

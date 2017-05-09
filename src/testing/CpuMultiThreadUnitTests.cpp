@@ -1,8 +1,7 @@
 // CpuMultiThreadUnitTests.cpp
-
 #include "cpu/GameOfLifeCpu.hpp"
-
 #include "gmock/gmock.h"
+#include <vector>
 
 
 namespace
@@ -35,10 +34,21 @@ protected:
 
 
 /////////////////////////////////////////////////////////////////
-/// \brief UnimplementedTest
+/// \brief TestSimpleSquareState
 /////////////////////////////////////////////////////////////////
-TEST_F( CpuMultiThreadUnitTests, UnimplementedTest )
-{}
+TEST_F( CpuMultiThreadUnitTests, TestSimpleSquareState )
+{
+  std::vector< char > initState = 
+  {
+    false, false, false, true,
+    false, true,  true,  false,
+    false, false, true,  false,
+    false, true,  false, false,
+  };
+
+  gol::GameOfLifeCpu game( initState, 4, 4, true );
+  game.propogateState( );
+}
 
 
 

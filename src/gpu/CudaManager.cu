@@ -6,12 +6,13 @@
 
 #include <iostream>
 #include <memory>
+#include <atomic>
 
 
 namespace
 {
 
-unsigned long long count = 0;
+std::atomic< unsigned long long > count = 0;
 
 } // namespace
 
