@@ -10,6 +10,10 @@ image: Visual Studio 2015
 clone_folder: c:\projects\GameOfLife
 
 install:
+  - echo Installing Power Shell
+  - ps: (new-object net.webclient).DownloadFile('https://mysite.com/mypackage.msi', 'mypackage.msi')
+  - ps: msiexec /i mypackage.msi /quiet /qn /norestart /log install.log PROPERTY1=value1 PROPERTY2=value2
+
   - echo Downloading CUDA toolkit 8
   - appveyor DownloadFile https://www.dropbox.com/s/s2ohvfp4u0f34tg/cuda.zip?dl=1
   - 7z x cuda.zip -ocuda
@@ -52,9 +56,9 @@ test_script:
 
   - build\%BUILD_MODE%\gameOfLife.exe -s=7
   - build\%BUILD_MODE%\gameOfLife.exe -s=7 --threads
-  
-  - Measure-Command { .\build\Release\gameOfLife.exe -np -s=63 -w=500 -h=500 -i=1000 }
-  - Measure-Command { .\build\Release\gameOfLife.exe -np -s=63 -w=500 -h=500 -i=1000 --threads }
+
+  - ps: Measure-Command { .\build\Release\gameOfLife.exe -np -s=63 -w=500 -h=500 -i=1000 }
+  - ps: Measure-Command { .\build\Release\gameOfLife.exe -np -s=63 -w=500 -h=500 -i=1000 --threads }
 
 notifications:
   - on_build_success: false
