@@ -1,25 +1,51 @@
 // GameOfLifeCpu.cpp
 #include "GameOfLifeCpu.hpp"
 
-#include "Semaphore.hpp"
 #include "GameOfLifeAlgorithm.hpp"
+
+#include <ctpl_stl.h>
 
 #include <iostream>
 #include <cassert>
 
 
+namespace gol
+{
+
 namespace
 {
 
-Semaphore startingSemaphore;
-Semaphore finishedSemaphore1;
-Semaphore finishedSemaphore2;
+void
+propState(
+          unsigned y,
+          dim3     dim,
+          GolBool *pState,
+          const GolBool *pPrevState
+          )
+{
+  for ( unsigned x = 0; x < dim.x; ++x )
+  {
+    pState[ y * dim.x + x ] = findNeighbors( pPrevState, dim, x, y );
+  }
+} 
 
 }
 
-
-namespace gol
+struct GameOfLifeCpu::CtplStuff
 {
+  const bool multiThreaded;
+  ctpl::thread_pool tp;
+  std::vector<std::future<void>> results;
+
+  CtplStuff(
+            const bool multiThreaded_,
+            std::vector< GolBool >::size_type height
+            )
+    : multiThreaded( multiThreaded_ )
+    , tp( multiThreaded ? std::thread::hardware_concurrency() : 0)
+    , results( height )
+    {}
+};
 
 
 GameOfLifeCpu::GameOfLifeCpu(
@@ -30,30 +56,9 @@ GameOfLifeCpu::GameOfLifeCpu(
                              )
   : GameOfLife( initState, width, height )
   , prevState_( state_.size( ) )
-  , threads_( 0 )
-  , threadsRunning_( false )
+  , m_( std::make_shared< CtplStuff >( multiThreading, height ) )
 {
-  if ( multiThreading )
-  {
-    _startThreadPool( std::thread::hardware_concurrency( ) );
-  }
 }
-
-
-
-GameOfLifeCpu::~GameOfLifeCpu( )
-{
-  try
-  {
-    _killThreads( );
-  }
-  catch ( const std::exception &e )
-  {
-    std::cerr << "Caught exception while stopping threadpool"
-              << e.what( ) << std::endl;
-  }
-}
-
 
 
 void
@@ -61,192 +66,33 @@ GameOfLifeCpu::propogateState( )
 {
   prevState_.swap( state_ );
 
-  if ( threads_.empty( ) )
-  {
-    _propogateState( 0, static_cast< unsigned >( height_ ) );
-  }
-  else
-  {
-    //
-    // allow threads to run
-    //
-    for ( auto i = 0; i < threads_.size( ); ++i )
-    {
-      startingSemaphore.notify( );
-    }
-
-    //
-    // wait for threads to finish
-    //
-    for ( auto i = 0; i < threads_.size( ); ++i )
-    {
-      finishedSemaphore1.wait( );
-    }
-
-    //
-    // allow threads to continue back to start of function
-    //
-    for ( auto i = 0; i < threads_.size( ); ++i )
-    {
-      finishedSemaphore2.notify( );
-    }
-  }
-} // GameOfLifeCpu::propogateState
-
-
-
-void
-GameOfLifeCpu::_propogateState(
-                               unsigned rowStart,
-                               unsigned rowEnd
-                               )
-{
   dim3 dim(
            static_cast< unsigned >( width_ ),
            static_cast< unsigned >( height_ )
            );
 
-  for ( unsigned y = rowStart; y < rowEnd; ++y )
-  {
-    for ( unsigned x = 0; x < dim.x; ++x )
+  if ( m_->multiThreaded )
+  {    
+    std::vector<std::future<void>> &results = m_->results;
+    for ( unsigned y = 0; y < height_; ++y )
     {
-      state_[ y * dim.x + x ] = findNeighbors( prevState_.data( ), dim, x, y );
-    }
-  }
-} // GameOfLifeCpu::propogateState
-
-
-
-void
-GameOfLifeCpu::_propogateStateThreaded(
-                                       unsigned rowStart,
-                                       unsigned rowEnd
-                                       )
-{
-  while ( true )
-  {
-    startingSemaphore.wait( );
-
-    //
-    // exit variable
-    //
-    if ( !threadsRunning_ )
-    {
-      break;
+      results[y] = m_->tp.push([this, y, &dim](int) {
+        propState( y, dim, state_.data(), prevState_.data() );
+      });
     }
 
-    _propogateState( rowStart, rowEnd );
-
-    finishedSemaphore1.notify( );
-    finishedSemaphore2.wait( );
-  }
-} // GameOfLifeCpu::propogateState
-
-
-
-void
-GameOfLifeCpu::_startThreadPool( unsigned numThreads )
-{
-  //
-  // already started threadpool or requested 0 threads
-  //
-  if ( !threads_.empty( ) || numThreads == 0 )
-  {
-    return;
-  }
-
-  // prevent threads from exiting
-  threadsRunning_ = true;
-
-  //
-  // determine the number of rows each thread should process
-  //
-  unsigned uHeight       = static_cast< unsigned >( height_ );
-  unsigned rowsPerThread = 1, extraRows = 0;
-
-  if ( numThreads > uHeight )
-  {
-    numThreads = uHeight;
+    for ( unsigned y = 0; y < height_; ++y )
+    {
+      results[y].wait();
+    }
   }
   else
   {
-    rowsPerThread = uHeight / numThreads;
-
-    extraRows = uHeight - numThreads * rowsPerThread;
+    for ( unsigned y = 0; y < height_; ++y )
+    {
+      propState( y, dim, state_.data(), prevState_.data() );
+    }
   }
-
-  unsigned rowStart, rowEnd;
-
-  //
-  // if the rows don't divide evenly amongst the threads
-  // (aka there is some remainder 'r') then add an extra
-  // row to the first r threads
-  //
-  ++rowsPerThread;
-  unsigned i = 0;
-  for ( ; i < extraRows; ++i )
-  {
-    rowStart = i * rowsPerThread;
-    rowEnd   = rowStart + rowsPerThread;
-
-    threads_.push_back( std::thread(
-                                    &GameOfLifeCpu::_propogateStateThreaded,
-                                    this,
-                                    rowStart,
-                                    rowEnd
-                                    ) );
-  }
-
-  //
-  // continue adding threads with the original number of rows
-  //
-  --rowsPerThread;
-  for ( ; i < numThreads; ++i )
-  {
-    rowStart = i * rowsPerThread + extraRows;
-    rowEnd   = rowStart + rowsPerThread;
-
-    threads_.push_back( std::thread(
-                                    &GameOfLifeCpu::_propogateStateThreaded,
-                                    this,
-                                    rowStart,
-                                    rowEnd
-                                    ) );
-  }
-
-  assert( ( i - 1 ) * rowsPerThread + rowsPerThread + extraRows == uHeight );
-  assert( numThreads == threads_.size( ) );
-} // GameOfLifeCpu::_startThreadPool
-
-
-
-void
-GameOfLifeCpu::_killThreads( )
-{
-  //
-  // set bool that causes threads to exit
-  //
-  threadsRunning_ = false;
-
-  //
-  // Unblock all threads
-  //
-  for ( auto i = 0; i < threads_.size( ); ++i )
-  {
-    startingSemaphore.notify( );
-  }
-
-  //
-  // Wait for all threads to finish
-  //
-  for ( auto &thread : threads_ )
-  {
-    thread.join( );
-  }
-
-  threads_.clear( );
-} // GameOfLifeCpu::_killThreads
-
-
+} // GameOfLifeCpu::propogateState
 
 } // namespace gol

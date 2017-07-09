@@ -38,16 +38,24 @@ add_library (
              gol
              ${SRC_DIR}/GameOfLife.hpp
              ${SRC_DIR}/GameOfLifeAlgorithm.hpp
-             ${SRC_DIR}/cpu/Semaphore.hpp
              ${SRC_DIR}/cpu/GameOfLifeCpu.hpp
              ${SRC_DIR}/cpu/GameOfLifeCpu.cpp
              )
+
+download_project(
+                 PROJ                ctpl
+                 GIT_REPOSITORY      https://github.com/vit-vit/CTPL.git
+                 GIT_TAG             v.0.0.2
+                 UPDATE_DISCONNECTED 1
+                 QUIET
+                 )
 
 if ( NOT MSVC )
   target_link_libraries ( gol -lpthread -lm )
 endif( )
 
 target_include_directories( gol PUBLIC ${SRC_DIR} )
+target_include_directories( gol SYSTEM PUBLIC ${ctpl_SOURCE_DIR} )
 
 set_target_properties(
                       gol PROPERTIES
@@ -169,6 +177,29 @@ if ( ${Curses_FOUND} )
                              ${CMAKE_CURRENT_BINARY_DIR}
                              )
   target_include_directories( gameOfLife PUBLIC ${SRC_DIR} )
+
+  set_target_properties(
+                        gameOfLife PROPERTIES
+                        CXX_STANDARD          14
+                        CXX_STANDARD_REQUIRED ON
+                        )
+
+  if ( PROJECT_CPP_FLAGS )
+    set_target_properties( gameOfLife PROPERTIES COMPILE_FLAGS ${PROJECT_CPP_FLAGS} )
+  endif( )
+
+else ( ${Curses_FOUND} )
+
+  add_executable(
+                 gameOfLife
+                 ${SRC_DIR}/app/GameOfLifeSimpleMain.cpp
+                 )
+
+  target_link_libraries ( gameOfLife gol )
+  add_dependencies      ( gameOfLife gol )
+
+  target_include_directories( gameOfLife SYSTEM PUBLIC ${CMAKE_CURRENT_BINARY_DIR} )
+  target_include_directories( gameOfLife        PUBLIC ${SRC_DIR}                  )
 
   set_target_properties(
                         gameOfLife PROPERTIES

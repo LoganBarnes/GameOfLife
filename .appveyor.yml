@@ -50,6 +50,9 @@ build_script:
 test_script:
   - build\%BUILD_MODE%\testGameOfLife.exe --gtest_filter=Cpu*
 
+  - build\%BUILD_MODE%\gameOfLife.exe
+  - build\%BUILD_MODE%\gameOfLife.exe --threads
+
 notifications:
   - on_build_success: false
   - on_build_failure: true

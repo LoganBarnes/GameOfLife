@@ -2,7 +2,7 @@
 #include "GameOfLife.hpp"
 
 #include <thread>
-
+#include <memory>
 
 namespace gol
 {
@@ -20,7 +20,7 @@ public:
                 const bool             multiThreading = false
                 );
 
-  ~GameOfLifeCpu( );
+  ~GameOfLifeCpu( ) = default;
 
   virtual
   void propogateState ( ) final;
@@ -52,13 +52,10 @@ private:
                                 unsigned rowEnd
                                 );
 
-  void _startThreadPool ( unsigned numThreads );
-  void _killThreads ( );
-
-  std::vector< GolBool >     prevState_;
-  std::vector< std::thread > threads_;
-
-  bool threadsRunning_;
+  std::vector< GolBool > prevState_;
+  
+  struct CtplStuff;
+  std::shared_ptr< CtplStuff > m_;
 
 };
 

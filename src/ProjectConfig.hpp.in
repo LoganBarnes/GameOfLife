@@ -6,5 +6,6 @@ namespace
 {
 
 #cmakedefine CI_SERVER
+#cmakedefine CUDA_FOUND
 
 } // namespace
