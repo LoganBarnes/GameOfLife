@@ -69,33 +69,44 @@ main(
     {
       std::string arg( argv[ i ] );
 
-      noPrint     |= ( arg == "-np" );
-      multithread |= ( arg == "--threads" );
-      cuda        |= ( arg == "--cuda"   );
-      thrust      |= ( arg == "--thrust" );
+      if (( arg == "-np" )
+          || ( arg == "--threads" )
+          || ( arg == "--cuda"   )
+          || ( arg == "--thrust" ))
+      {
+        noPrint     |= ( arg == "-np" );
+        multithread |= ( arg == "--threads" );
+        cuda        |= ( arg == "--cuda"   );
+        thrust      |= ( arg == "--thrust" );
+      }
 
-      if ( arg.size( ) > wStr.size( ) &&
+      else if ( arg.size( ) > wStr.size( ) &&
           std::mismatch( wStr.begin( ), wStr.end( ), arg.begin( ) ).first == wStr.end( ) )
       {
         w = std::stoul( arg.substr( wStr.size( ) ) );
       }
 
-      if ( arg.size( ) > hStr.size( ) &&
+      else if ( arg.size( ) > hStr.size( ) &&
           std::mismatch( hStr.begin( ), hStr.end( ), arg.begin( ) ).first == hStr.end( ) )
       {
         h = std::stoul( arg.substr( hStr.size( ) ) );
       }
 
-      if ( arg.size( ) > sStr.size( ) &&
+      else if ( arg.size( ) > sStr.size( ) &&
           std::mismatch( sStr.begin( ), sStr.end( ), arg.begin( ) ).first == sStr.end( ) )
       {
         seed = std::stoll( arg.substr( sStr.size( ) ) );
       }
 
-      if ( arg.size( ) > iStr.size( ) &&
+      else if ( arg.size( ) > iStr.size( ) &&
           std::mismatch( iStr.begin( ), iStr.end( ), arg.begin( ) ).first == iStr.end( ) )
       {
         maxIterations = std::stoll( arg.substr( iStr.size( ) ) );
+      }
+      else
+      {
+        std::cerr << "Unknown argument: " << arg << std::endl;
+        return EXIT_FAILURE;
       }
     }
 
