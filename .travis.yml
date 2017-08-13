@@ -84,9 +84,9 @@ matrix:
       compiler: clang
       env: SHARED=ON
     - os: linux
-      compiler: "clang-3.9"
+      compiler: "clang-4.0"
       env: LLVM=default CUDA=8.0.44-1 SHARED=ON
-      addons: *clang39
+      addons: *clang40
 
     # DEBUG
     - os: osx
@@ -94,9 +94,9 @@ matrix:
       compiler: clang
       env: BUILD_TYPE=Debug
     - os: linux
-      compiler: "clang-3.9"
+      compiler: "clang-4.0"
       env: LLVM=default CUDA=8.0.44-1 BUILD_TYPE=Debug
-      addons: *clang39
+      addons: *clang40
 
     # DEBUG SHARED LIBS
     - os: osx
@@ -104,9 +104,9 @@ matrix:
       compiler: clang
       env: SHARED=ON BUILD_TYPE=Debug
     - os: linux
-      compiler: "clang-3.9"
+      compiler: "clang-4.0"
       env: LLVM=default CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
-      addons: *clang39
+      addons: *clang40
 
 
 before_install:
@@ -123,7 +123,7 @@ before_install:
   ############################################################################
   # Setup default versions and override compiler if needed
   ############################################################################
-  - if [[ "${LLVM}" == "default" ]]; then LLVM=3.9; fi
+  - if [[ "${LLVM}" == "default" ]]; then LLVM=4.0; fi
   - |
     if [[ "${LLVM}" != "" ]]; then
       export CXX=clang++-${LLVM}
