@@ -8,6 +8,10 @@ dist: trusty
 
 # Save common build configurations as shortcuts, so we can reference them later.
 addons_shortcuts:
+  addons_clang39: &clang38
+    apt:
+      sources: [ 'llvm-toolchain-trusty-3.8' ]
+      packages: [ 'clang-3.8', 'libc++-dev' ]
   addons_clang39: &clang39
     apt:
       sources: [ 'llvm-toolchain-trusty-3.9' ]
@@ -45,6 +49,10 @@ matrix:
     - os: osx
       osx_image: xcode8
       compiler: clang
+    - os: linux
+      compiler: "clang-3.8"
+      env: LLVM=3.8
+      addons: *clang38
     - os: linux
       compiler: "clang-3.9"
       env: LLVM=3.9
@@ -84,9 +92,9 @@ matrix:
       compiler: clang
       env: SHARED=ON
     - os: linux
-      compiler: "clang-4.0"
-      env: LLVM=default CUDA=8.0.44-1 SHARED=ON
-      addons: *clang40
+      compiler: "g++-4.9"
+      env: GCC=4.9 CUDA=8.0.44-1 SHARED=ON
+      addons: *gcc49
 
     # DEBUG
     - os: osx
@@ -94,9 +102,9 @@ matrix:
       compiler: clang
       env: BUILD_TYPE=Debug
     - os: linux
-      compiler: "clang-4.0"
-      env: LLVM=default CUDA=8.0.44-1 BUILD_TYPE=Debug
-      addons: *clang40
+      compiler: "g++-4.9"
+      env: GCC=4.9 CUDA=8.0.44-1 BUILD_TYPE=Debug
+      addons: *gcc49
 
     # DEBUG SHARED LIBS
     - os: osx
@@ -104,9 +112,9 @@ matrix:
       compiler: clang
       env: SHARED=ON BUILD_TYPE=Debug
     - os: linux
-      compiler: "clang-4.0"
-      env: LLVM=default CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
-      addons: *clang40
+      compiler: "g++-4.9"
+      env: GCC=4.9 CUDA=8.0.44-1 SHARED=ON BUILD_TYPE=Debug
+      addons: *gcc49
 
 
 before_install:
@@ -123,7 +131,6 @@ before_install:
   ############################################################################
   # Setup default versions and override compiler if needed
   ############################################################################
-  - if [[ "${LLVM}" == "default" ]]; then LLVM=4.0; fi
   - |
     if [[ "${LLVM}" != "" ]]; then
       export CXX=clang++-${LLVM}
